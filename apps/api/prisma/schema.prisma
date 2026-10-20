@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Grano {
+  id            Int      @id @default(autoincrement()) @map("id_grano")
+  nombreCafe    String   @map("nombre_cafe") @db.VarChar(100)
+  finca         String?  @db.VarChar(100)
+  productor     String?  @db.VarChar(100)
+  paisOrigen    String   @map("pais_origen") @db.VarChar(50)
+  region        String?  @db.VarChar(100)
+  varietal      String?  @db.VarChar(50)
+  proceso       String   @db.VarChar(50) // Lavado | Natural | Honey | Anaeróbico
+  puntuacionSca Decimal  @map("puntuacion_sca") @db.Decimal(5, 2)
+  fechaCreacion DateTime @default(now()) @map("fecha_creacion")
+  lotes         Lote[]
+
+  @@map("granos")
+}
+
+model Lote {
+  id            Int           @id @default(autoincrement()) @map("id_lote")
+  idGrano       Int           @map("id_grano")
+  codigoLote    String        @unique @map("codigo_lote") @db.VarChar(30)
+  tostaduria    String        @db.VarChar(100)
+  fechaTueste   DateTime      @map("fecha_tueste") @db.Date
+  nivelTueste   String        @map("nivel_tueste") @db.VarChar(30) // Claro | Medio | Oscuro
+  pesoInicialG  Decimal       @map("peso_inicial_g") @db.Decimal(10, 2)
+  pesoActualG   Decimal       @map("peso_actual_g") @db.Decimal(10, 2)
+  activo        Boolean       @default(true)
+  grano         Grano         @relation(fields: [idGrano], references: [id])
+  calibraciones Calibracion[]
+  notasCata     NotaCata[]
+
+  @@index([idGrano])
+  @@map("lotes")
+}
+
+model Equipo {
+  id                 Int           @id @default(autoincrement()) @map("id_equipo")
+  tipo               String        @db.VarChar(50) // molino | maquina
+  marca              String        @db.VarChar(50)
+  modelo             String        @db.VarChar(50)
+  identificadorLocal String        @unique @map("identificador_local") @db.VarChar(20)
+  comoMolino         Calibracion[] @relation("molino_usado")
+  comoMaquina        Calibracion[] @relation("maquina_usada")
+
+  @@map("equipos")
+}
+
+model Calibracion {
+  id                Int      @id @default(autoincrement()) @map("id_calibracion")
+  idLote            Int      @map("id_lote")
+  idMolino          Int      @map("id_molino")
+  idMaquina         Int      @map("id_maquina")
+  fechaHora         DateTime @map("fecha_hora")
+  dosisInG          Decimal  @map("dosis_in_g") @db.Decimal(5, 2)
+  ajusteMolienda    Decimal  @map("ajuste_molienda") @db.Decimal(4, 2)
+  temperaturaC      Decimal  @map("temperatura_c") @db.Decimal(4, 1)
+  presionBar        Decimal  @map("presion_bar") @db.Decimal(3, 1)
+  yieldOutG         Decimal  @map("yield_out_g") @db.Decimal(5, 2)
+  tiempoSegundos    Decimal  @map("tiempo_segundos") @db.Decimal(5, 1)
+  // Derivados históricos (redundancia controlada, ver docs)
+  ratioCalculado    String   @map("ratio_calculado") @db.VarChar(10)
+  tdsPorcentaje     Decimal  @map("tds_porcentaje") @db.Decimal(5, 2)
+  eyPorcentaje      Decimal  @map("ey_porcentaje") @db.Decimal(5, 2)
+  diagnostico       String   @db.VarChar(150)
+  calificacionSabor Decimal  @map("calificacion_sabor") @db.Decimal(3, 1)
+  notasBarista      String?  @map("notas_barista") @db.VarChar(255)
+  baristaNombre     String   @map("barista_nombre") @db.VarChar(100)
+  lote              Lote     @relation(fields: [idLote], references: [id])
+  molino            Equipo   @relation("molino_usado", fields: [idMolino], references: [id])
+  maquina           Equipo   @relation("maquina_usada", fields: [idMaquina], references: [id])
+
+  @@index([idLote])
+  @@map("calibraciones")
+}
+
+// CAMBIO vs. documento A2: las notas de cata cuelgan de LOTES (antes GRANOS).
+model NotaCata {
+  id         Int    @id @default(autoincrement()) @map("id_nota")
+  idLote     Int    @map("id_lote")
+  descriptor String @db.VarChar(80)
+  lote       Lote   @relation(fields: [idLote], references: [id])
+
+  @@unique([idLote, descriptor])
+  @@map("notas_cata")
+}
