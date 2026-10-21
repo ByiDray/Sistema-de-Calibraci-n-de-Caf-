@@ -19,7 +19,7 @@ export type LoteDetalle = Lote & { notasCata: NotaCata[]; calibraciones: Calibra
 export async function api<T>(path: string, options?: { method?: string; body?: unknown }): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     method: options?.method ?? "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-api-key": process.env.EXPO_PUBLIC_API_KEY ?? "" },
     body: options?.body ? JSON.stringify(options.body) : undefined,
   });
   const data = await res.json().catch(() => null);

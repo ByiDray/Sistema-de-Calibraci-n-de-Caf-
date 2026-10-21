@@ -15,6 +15,13 @@ const id = (req: Request) => Number(req.params.id);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
+// Clave sencilla para cuando la API se expone con un túnel. Si API_KEY no está definida, no se exige.
+app.use((req, res, next) => {
+  const key = process.env.API_KEY;
+  if (key && req.header("x-api-key") !== key) return res.status(401).json({ message: "No autorizado" });
+  next();
+});
+
 // ---- GRANOS (ABCD) ----
 app.get("/granos", h(async (_req, res) => res.json(await prisma.grano.findMany({ orderBy: { id: "asc" } }))));
 app.get("/granos/:id", h(async (req, res) =>
