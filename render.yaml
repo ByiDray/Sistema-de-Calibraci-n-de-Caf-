@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: api-cafe
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build -w apps/api
+    startCommand: npm run start -w apps/api
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: API_KEY
+        sync: false

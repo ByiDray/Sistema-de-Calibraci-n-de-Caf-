@@ -65,6 +65,11 @@ const notas = [
 ] as const;
 
 async function main() {
+  // El seed borra todas las tablas: fuera de localhost exige confirmación explícita.
+  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(process.env.DATABASE_URL ?? "");
+  if (!local && process.env.SEED_CONFIRM !== "si") {
+    throw new Error("La base no es local. El seed BORRA los datos; para continuar define SEED_CONFIRM=si");
+  }
   await prisma.$executeRawUnsafe(
     'TRUNCATE TABLE "notas_cata", "calibraciones", "lotes", "equipos", "granos" RESTART IDENTITY CASCADE',
   );
