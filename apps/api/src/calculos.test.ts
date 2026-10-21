@@ -20,6 +20,10 @@ test("los límites 18 y 22 son equilibrados", () => {
   assert.equal(calcularDerivados(10, 20, 11).diagnostico, "EQUILIBRADA"); // EY 22
 });
 
+test("redondea la mitad hacia arriba como PostgreSQL (1.95 -> 2.0)", () => {
+  assert.equal(calcularDerivados(16, 31.2, 19).ratioCalculado, "1:2.0");
+});
+
 test("ratio con un decimal", () => {
   assert.equal(calcularDerivados(19, 40, 9.4).ratioCalculado, "1:2.1");
 });
