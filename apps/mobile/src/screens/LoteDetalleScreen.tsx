@@ -7,7 +7,7 @@ import { api, type LoteDetalle } from '../api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LoteDetalle'>;
 
-export default function LoteDetalleScreen({ route }: Props) {
+export default function LoteDetalleScreen({ route, navigation }: Props) {
   const { idLote } = route.params;
   const [lote, setLote] = useState<LoteDetalle | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +53,7 @@ export default function LoteDetalleScreen({ route }: Props) {
       </View>
 
       <Text style={s.h2}>Calibraciones</Text>
+      <Button title="Nueva calibración" onPress={() => navigation.navigate('CalibracionForm', { idLote })} />
       {lote.calibraciones.length === 0 && <Text style={s.small}>Sin calibraciones.</Text>}
       {lote.calibraciones.map((c) => (
         <View key={c.id} style={s.card}>
