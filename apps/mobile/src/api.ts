@@ -14,6 +14,7 @@ export type Calibracion = {
   ratioCalculado: string; eyPorcentaje: string; diagnostico: string; calificacionSabor: string;
   baristaNombre: string; notasBarista: string | null;
 };
+export type Equipo = { id: number; tipo: 'molino' | 'maquina'; marca: string; modelo: string; identificadorLocal: string };
 export type LoteDetalle = Lote & { notasCata: NotaCata[]; calibraciones: Calibracion[] };
 
 export async function api<T>(path: string, options?: { method?: string; body?: unknown }): Promise<T> {
