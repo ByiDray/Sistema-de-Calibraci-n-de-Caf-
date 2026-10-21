@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
@@ -15,13 +15,21 @@ export default function LotesScreen({ route, navigation }: Props) {
     api<Lote[]>(`/lotes?idGrano=${route.params.idGrano}`).then(setLotes).catch((e) => setError(e.message));
   }, [route.params.idGrano]));
 
+  const nuevo = () => navigation.navigate('LoteForm', { idGrano: route.params.idGrano });
+
   if (error) return <View style={s.center}><Text>{error}</Text></View>;
   if (!lotes) return <View style={s.center}><ActivityIndicator /></View>;
-  if (lotes.length === 0) return <View style={s.center}><Text>Este grano aún no tiene lotes.</Text></View>;
+  if (lotes.length === 0) return (
+    <View style={s.center}>
+      <Text style={{ marginBottom: 12 }}>Este grano aún no tiene lotes.</Text>
+      <Button title="Nuevo lote" onPress={nuevo} />
+    </View>
+  );
 
   return (
     <FlatList
       data={lotes}
+      ListHeaderComponent={<View style={{ padding: 16 }}><Button title="Nuevo lote" onPress={nuevo} /></View>}
       keyExtractor={(l) => String(l.id)}
       renderItem={({ item }) => (
         <Pressable style={s.row} onPress={() => navigation.navigate('LoteDetalle', { idLote: item.id, codigo: item.codigoLote })}>

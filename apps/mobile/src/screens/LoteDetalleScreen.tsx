@@ -39,6 +39,8 @@ export default function LoteDetalleScreen({ route, navigation }: Props) {
       </Text>
       <Text style={s.small}>Existencia: {Number(lote.pesoActualG)} g / {Number(lote.pesoInicialG)} g</Text>
 
+      <Button title="Editar lote" onPress={() => navigation.navigate('LoteForm', { idGrano: lote.idGrano, idLote })} />
+
       <Text style={s.h2}>Notas de cata del lote</Text>
       {lote.notasCata.length === 0 && <Text style={s.small}>Sin notas todavía.</Text>}
       {lote.notasCata.map((n) => (
