@@ -6,7 +6,8 @@
     "dev": "tsx watch src/index.ts",
     "migrate": "prisma migrate dev",
     "generate": "prisma generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",
