@@ -30,3 +30,8 @@ Ramas `feature/*` → Pull Request a `main`. Sin push directo a `main`.
 - **Datos iniciales (una sola vez):** el seed borra las tablas, por eso fuera de localhost exige `SEED_CONFIRM=si`.
 - **App:** `EXPO_PUBLIC_API_URL` apunta a la URL pública de Render.
 - El plan gratuito de Render duerme la API tras 15 minutos sin uso; la primera petición tarda cerca de un minuto.
+
+### Producción
+- API: https://api-cafe-wvht.onrender.com (requiere el header `x-api-key`; `/health` es público).
+- Base de datos: Neon. Las migraciones se aplican solas en cada deploy de Render.
+- La app móvil apunta a producción con `EXPO_PUBLIC_API_URL` en `apps/mobile/.env` (ver `.env.example`).
