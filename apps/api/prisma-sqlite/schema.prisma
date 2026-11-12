@@ -1,0 +1,95 @@
+// Unidad 4.6 · Mismo modelo de App BD Café para SQLite (sin tipos nativos de PostgreSQL ni CHECK).
+// Se usa con: npx prisma db push --config prisma-sqlite.config.ts
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/sqlite"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Grano {
+  id            Int      @id @default(autoincrement()) @map("id_grano")
+  nombreCafe    String   @map("nombre_cafe")
+  finca         String? 
+  productor     String? 
+  paisOrigen    String   @map("pais_origen")
+  region        String? 
+  varietal      String? 
+  proceso       String   // Lavado | Natural | Honey | Anaeróbico
+  puntuacionSca Decimal  @map("puntuacion_sca")
+  fechaCreacion DateTime @default(now()) @map("fecha_creacion")
+  lotes         Lote[]
+
+  @@map("granos")
+}
+
+model Lote {
+  id            Int           @id @default(autoincrement()) @map("id_lote")
+  idGrano       Int           @map("id_grano")
+  codigoLote    String        @unique @map("codigo_lote")
+  tostaduria    String       
+  fechaTueste   DateTime      @map("fecha_tueste")
+  nivelTueste   String        @map("nivel_tueste") // Claro | Medio | Oscuro
+  pesoInicialG  Decimal       @map("peso_inicial_g")
+  pesoActualG   Decimal       @map("peso_actual_g")
+  activo        Boolean       @default(true)
+  grano         Grano         @relation(fields: [idGrano], references: [id])
+  calibraciones Calibracion[]
+  notasCata     NotaCata[]
+
+  @@index([idGrano])
+  @@map("lotes")
+}
+
+model Equipo {
+  id                 Int           @id @default(autoincrement()) @map("id_equipo")
+  tipo               String        // molino | maquina
+  marca              String       
+  modelo             String       
+  identificadorLocal String        @unique @map("identificador_local")
+  comoMolino         Calibracion[] @relation("molino_usado")
+  comoMaquina        Calibracion[] @relation("maquina_usada")
+
+  @@map("equipos")
+}
+
+model Calibracion {
+  id                Int      @id @default(autoincrement()) @map("id_calibracion")
+  idLote            Int      @map("id_lote")
+  idMolino          Int      @map("id_molino")
+  idMaquina         Int      @map("id_maquina")
+  fechaHora         DateTime @map("fecha_hora")
+  dosisInG          Decimal  @map("dosis_in_g")
+  ajusteMolienda    Decimal  @map("ajuste_molienda")
+  temperaturaC      Decimal  @map("temperatura_c")
+  presionBar        Decimal  @map("presion_bar")
+  yieldOutG         Decimal  @map("yield_out_g")
+  tiempoSegundos    Decimal  @map("tiempo_segundos")
+  // Derivados históricos (redundancia controlada, ver docs)
+  ratioCalculado    String   @map("ratio_calculado")
+  tdsPorcentaje     Decimal  @map("tds_porcentaje")
+  eyPorcentaje      Decimal  @map("ey_porcentaje")
+  diagnostico       String  
+  calificacionSabor Decimal  @map("calificacion_sabor")
+  notasBarista      String?  @map("notas_barista")
+  baristaNombre     String   @map("barista_nombre")
+  lote              Lote     @relation(fields: [idLote], references: [id])
+  molino            Equipo   @relation("molino_usado", fields: [idMolino], references: [id])
+  maquina           Equipo   @relation("maquina_usada", fields: [idMaquina], references: [id])
+
+  @@index([idLote])
+  @@map("calibraciones")
+}
+
+// CAMBIO vs. documento A2: las notas de cata cuelgan de LOTES (antes GRANOS).
+model NotaCata {
+  id         Int    @id @default(autoincrement()) @map("id_nota")
+  idLote     Int    @map("id_lote")
+  descriptor String
+  lote       Lote   @relation(fields: [idLote], references: [id])
+
+  @@unique([idLote, descriptor])
+  @@map("notas_cata")
+}

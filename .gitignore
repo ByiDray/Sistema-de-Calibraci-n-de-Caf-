@@ -4,3 +4,8 @@ node_modules/
 dist/
 *.log
 .DS_Store
+
+# Respaldos y exportaciones locales (contienen datos)
+respaldos/
+*.sqlite
+apps/api/generated/
