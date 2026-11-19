@@ -28,7 +28,8 @@ app.use((req, res, next) => {
 
 // ---- GRANOS (ABCD) ----
 const DEC_GRANO = ["puntuacionSca"];
-app.get("/granos", h(async (_req, res) => res.json(await prisma.grano.findMany({ orderBy: { id: "asc" } }))));
+app.get("/granos", h(async (_req, res) =>
+  res.json(await prisma.grano.findMany({ orderBy: { id: "asc" }, include: { _count: { select: { lotes: true } } } }))));
 app.get("/granos/:id", h(async (req, res) =>
   res.json(await prisma.grano.findUniqueOrThrow({ where: { id: id(req) }, include: { lotes: true } }))));
 app.post("/granos", h(async (req, res) =>

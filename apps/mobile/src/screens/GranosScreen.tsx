@@ -1,88 +1,111 @@
-import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Button, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../App';
-import { api, API_URL, type Grano } from '../api';
+import { useMemo, useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { api, type Grano } from '../api';
+import type { CafeProps } from '../navegacion';
+import { color, espacio, texto } from '../tema';
+import { BotonFlotante, Buscador, Cargando, ErrorCarga, EstadoVacio, Fila, Insignia, Selector, Tarjeta, Boton } from '../ui';
+import { useCarga } from '../useCarga';
+import { num } from '../utilidades';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Granos'>;
+export const PROCESOS = ['Lavado', 'Natural', 'Honey', 'Anaeróbico'] as const;
 
-export default function GranosScreen({ navigation }: Props) {
-  const [granos, setGranos] = useState<Grano[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [nombre, setNombre] = useState('');
-  const [pais, setPais] = useState('');
+const normalizar = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
-  const cargar = useCallback(() => {
-    setError(null);
-    api<Grano[]>('/granos').then(setGranos).catch((e) => setError(e.message));
-  }, []);
-  useFocusEffect(cargar);
+export default function GranosScreen({ navigation }: CafeProps<'Granos'>) {
+  const { datos: granos, error, refrescando, recargar } = useCarga(() => api<Grano[]>('/granos'), []);
+  const [busqueda, setBusqueda] = useState('');
+  const [proceso, setProceso] = useState<string>('Todos');
 
-  const agregar = async () => {
-    if (!nombre.trim() || !pais.trim()) return Alert.alert('Faltan datos', 'Nombre y país son obligatorios.');
-    try {
-      await api('/granos', {
-        method: 'POST',
-        body: { nombreCafe: nombre.trim(), paisOrigen: pais.trim(), proceso: 'Lavado', puntuacionSca: 80 },
-      });
-      setNombre(''); setPais(''); cargar();
-    } catch (e: any) { Alert.alert('Error', e.message); }
-  };
+  const visibles = useMemo(() => {
+    const q = normalizar(busqueda.trim());
+    return (granos ?? []).filter((g) =>
+      (proceso === 'Todos' || g.proceso === proceso) &&
+      (!q || normalizar([g.nombreCafe, g.paisOrigen, g.region, g.finca, g.productor, g.varietal].filter(Boolean).join(' ')).includes(q)));
+  }, [granos, busqueda, proceso]);
 
-  const borrar = (g: Grano) =>
-    Alert.alert('Eliminar grano', `¿Eliminar "${g.nombreCafe}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar', style: 'destructive',
-        onPress: () => api(`/granos/${g.id}`, { method: 'DELETE' }).then(cargar)
-          .catch((e) => Alert.alert('No se pudo eliminar', 'Probablemente tiene lotes asociados. ' + e.message)),
-      },
-    ]);
+  const nuevo = () => navigation.navigate('GranoForm', {});
 
-  if (error) return (
-    <View style={s.center}>
-      <Text style={s.err}>No se pudo conectar con la API</Text>
-      <Text style={s.small}>{API_URL}</Text>
-      <Text style={s.small}>{error}</Text>
-      <Button title="Reintentar" onPress={cargar} />
-    </View>
+  if (error && !granos) return <ErrorCarga mensaje={error} onReintentar={recargar} />;
+  if (!granos) return <Cargando mensaje="Cargando tus cafés…" />;
+
+  if (granos.length === 0) return (
+    <EstadoVacio
+      icono="cafe-outline"
+      titulo="Aún no registras cafés"
+      mensaje="Empieza agregando el primer grano: su origen, proceso y puntuación. Después podrás crear lotes y calibrarlos."
+      accion={<Boton titulo="Agregar mi primer café" icono="add" onPress={nuevo} />}
+    />
   );
-  if (!granos) return <View style={s.center}><ActivityIndicator /></View>;
 
   return (
-    <FlatList
-      data={granos}
-      keyExtractor={(g) => String(g.id)}
-      ListHeaderComponent={
-        <View style={s.form}>
-          <TextInput style={s.input} placeholder="Nombre del café" value={nombre} onChangeText={setNombre} />
-          <TextInput style={s.input} placeholder="País de origen" value={pais} onChangeText={setPais} />
-          <Button title="Agregar grano" onPress={agregar} />
-        </View>
-      }
-      renderItem={({ item }) => (
-        <Pressable
-          style={s.row}
-          onPress={() => navigation.navigate('Lotes', { idGrano: item.id, nombre: item.nombreCafe })}
-          onLongPress={() => borrar(item)}
-        >
-          <Text style={s.title}>{item.nombreCafe}</Text>
-          <Text style={s.small}>{item.paisOrigen} · {item.proceso} · SCA {item.puntuacionSca}</Text>
-        </Pressable>
-      )}
-      ListFooterComponent={<Text style={s.hint}>Mantén presionado un grano para eliminarlo.</Text>}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={visibles}
+        keyExtractor={(g) => String(g.id)}
+        contentContainerStyle={s.lista}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+        refreshing={refrescando}
+        onRefresh={recargar}
+        ListHeaderComponent={
+          <View style={{ gap: espacio.m, marginBottom: espacio.xs }}>
+            <Buscador valor={busqueda} onCambio={setBusqueda} placeholder="Buscar por nombre, país, finca…" />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <Selector
+                opciones={['Todos', ...PROCESOS].map((p) => ({ valor: p, etiqueta: p }))}
+                valor={proceso} onCambio={setProceso}
+              />
+            </ScrollView>
+            <Text style={texto.pequeno}>
+              {visibles.length === granos.length ? `${granos.length} cafés` : `${visibles.length} de ${granos.length} cafés`}
+            </Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <EstadoVacio icono="search-outline" titulo="Sin resultados" mensaje="Prueba con otra búsqueda o quita el filtro de proceso."
+            accion={<Boton titulo="Limpiar filtros" variante="secundario" onPress={() => { setBusqueda(''); setProceso('Todos'); }} />} />
+        }
+        renderItem={({ item }) => (
+          <Tarjeta onPress={() => navigation.navigate('Lotes', { idGrano: item.id, nombre: item.nombreCafe })}>
+            <Fila style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={s.nombre}>{item.nombreCafe}</Text>
+                <Fila style={{ gap: 4 }}>
+                  <Ionicons name="location-outline" size={14} color={color.textoSuave} />
+                  <Text style={texto.pequeno} numberOfLines={1}>
+                    {[item.region, item.paisOrigen].filter(Boolean).join(', ')}
+                    {item.finca ? ` · ${item.finca}` : ''}
+                  </Text>
+                </Fila>
+              </View>
+              <View style={s.sca}>
+                <Text style={s.scaValor}>{num(item.puntuacionSca)}</Text>
+                <Text style={s.scaEtiqueta}>SCA</Text>
+              </View>
+            </Fila>
+            <Fila style={{ justifyContent: 'space-between' }}>
+              <Fila style={{ gap: 6 }}>
+                <Insignia texto={item.proceso} />
+                {item.varietal && <Insignia texto={item.varietal} fg={color.textoSuave} bg={color.fondo} />}
+              </Fila>
+              <Fila style={{ gap: 2 }}>
+                {item._count && <Text style={texto.pequeno}>{item._count.lotes} {item._count.lotes === 1 ? 'lote' : 'lotes'}</Text>}
+                <Ionicons name="chevron-forward" size={18} color={color.textoTenue} />
+              </Fila>
+            </Fila>
+          </Tarjeta>
+        )}
+      />
+      <BotonFlotante titulo="Nuevo café" onPress={nuevo} />
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 8 },
-  err: { fontSize: 16, fontWeight: '600' },
-  form: { padding: 16, gap: 8, borderBottomWidth: 1, borderColor: '#ddd' },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8 },
-  row: { padding: 16, borderBottomWidth: 1, borderColor: '#eee' },
-  title: { fontSize: 16, fontWeight: '600' },
-  small: { color: '#666', marginTop: 2 },
-  hint: { textAlign: 'center', color: '#999', padding: 16 },
+  lista: { padding: espacio.l, gap: espacio.m, paddingBottom: 96 },
+  nombre: { fontSize: 17, fontWeight: '700', color: color.texto },
+  sca: { alignItems: 'center', backgroundColor: color.primarioSuave, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4, minWidth: 56 },
+  scaValor: { fontSize: 18, fontWeight: '800', color: color.primario },
+  scaEtiqueta: { fontSize: 10, fontWeight: '700', color: color.primario, letterSpacing: 1 },
 });

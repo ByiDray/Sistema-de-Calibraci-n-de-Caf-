@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api-local",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd apps\\api && set API_KEY=local-dev&& npx tsx src/index.ts"],
+      "port": 3001
+    },
+    {
+      "name": "mobile-web",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd apps\\mobile && set EXPO_PUBLIC_API_URL=http://localhost:3001&& set EXPO_PUBLIC_API_KEY=local-dev&& npx expo start --web --port 8081"],
+      "port": 8081
+    }
+  ]
+}

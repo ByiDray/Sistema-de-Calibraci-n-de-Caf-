@@ -3,14 +3,17 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000
 export type Grano = {
   id: number; nombreCafe: string; finca: string | null; productor: string | null; paisOrigen: string;
   region: string | null; varietal: string | null; proceso: string; puntuacionSca: string;
+  _count?: { lotes: number };
 };
+export type GranoConLotes = Grano & { lotes: Lote[] };
 export type Lote = {
   id: number; idGrano: number; codigoLote: string; tostaduria: string; fechaTueste: string;
   nivelTueste: string; pesoInicialG: string; pesoActualG: string; activo: boolean; grano?: Grano;
 };
 export type NotaCata = { id: number; idLote: number; descriptor: string };
 export type Calibracion = {
-  id: number; fechaHora: string; dosisInG: string; yieldOutG: string; tiempoSegundos: string;
+  id: number; idLote: number; idMolino: number; idMaquina: number; fechaHora: string;
+  ajusteMolienda: string; temperaturaC: string; presionBar: string; tdsPorcentaje: string; dosisInG: string; yieldOutG: string; tiempoSegundos: string;
   ratioCalculado: string; eyPorcentaje: string; diagnostico: string; calificacionSabor: string;
   baristaNombre: string; notasBarista: string | null;
 };
