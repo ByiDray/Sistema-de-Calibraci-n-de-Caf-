@@ -1,87 +1,66 @@
-import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Button, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { api, type Equipo } from '../api';
+import type { EquiposProps } from '../navegacion';
+import { color, espacio, radio, texto } from '../tema';
+import { Boton, BotonFlotante, Cargando, ErrorCarga, EstadoVacio, Fila, Seccion, Tarjeta, type Icono } from '../ui';
+import { useCarga } from '../useCarga';
 
-export default function EquiposScreen() {
-  const [equipos, setEquipos] = useState<Equipo[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [tipo, setTipo] = useState<'molino' | 'maquina'>('molino');
-  const [marca, setMarca] = useState('');
-  const [modelo, setModelo] = useState('');
-  const [codigo, setCodigo] = useState('');
+const GRUPOS: { tipo: Equipo['tipo']; titulo: string; icono: Icono; vacio: string }[] = [
+  { tipo: 'molino', titulo: 'Molinos', icono: 'settings-outline', vacio: 'Agrega el molino con el que preparas.' },
+  { tipo: 'maquina', titulo: 'Máquinas de espresso', icono: 'cafe-outline', vacio: 'Agrega tu máquina de espresso.' },
+];
 
-  const cargar = useCallback(() => {
-    api<Equipo[]>('/equipos').then(setEquipos).catch((e) => setError(e.message));
-  }, []);
-  useFocusEffect(cargar);
+export default function EquiposScreen({ navigation }: EquiposProps<'Equipos'>) {
+  const { datos: equipos, error, recargar } = useCarga(() => api<Equipo[]>('/equipos'), []);
 
-  const agregar = async () => {
-    if (!marca.trim() || !modelo.trim() || !codigo.trim()) return Alert.alert('Faltan datos', 'Marca, modelo y código son obligatorios.');
-    try {
-      await api('/equipos', {
-        method: 'POST',
-        body: { tipo, marca: marca.trim(), modelo: modelo.trim(), identificadorLocal: codigo.trim() },
-      });
-      setMarca(''); setModelo(''); setCodigo(''); cargar();
-    } catch (e: any) {
-      Alert.alert('No se pudo agregar', e.message.includes('Unique') ? 'Ya existe un equipo con ese código.' : e.message);
-    }
-  };
+  if (error && !equipos) return <ErrorCarga mensaje={error} onReintentar={recargar} />;
+  if (!equipos) return <Cargando />;
 
-  const borrar = (eq: Equipo) =>
-    Alert.alert('Eliminar equipo', `¿Eliminar ${eq.marca} ${eq.modelo}?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar', style: 'destructive',
-        onPress: () => api(`/equipos/${eq.id}`, { method: 'DELETE' }).then(cargar)
-          .catch(() => Alert.alert('No se pudo eliminar', 'El equipo se usa en calibraciones.')),
-      },
-    ]);
-
-  if (error) return <View style={s.center}><Text>{error}</Text></View>;
-  if (!equipos) return <View style={s.center}><ActivityIndicator /></View>;
+  if (equipos.length === 0) return (
+    <EstadoVacio
+      icono="construct-outline" titulo="Registra tu equipo"
+      mensaje="Para calibrar necesitas al menos un molino y una máquina de espresso."
+      accion={<Boton titulo="Agregar equipo" icono="add" onPress={() => navigation.navigate('EquipoForm', {})} />}
+    />
+  );
 
   return (
-    <FlatList
-      data={equipos}
-      keyExtractor={(e) => String(e.id)}
-      ListHeaderComponent={
-        <View style={s.form}>
-          <View style={s.chips}>
-            {(['molino', 'maquina'] as const).map((t) => (
-              <Pressable key={t} onPress={() => setTipo(t)} style={[s.chip, tipo === t && s.chipOn]}>
-                <Text style={tipo === t && s.chipTextOn}>{t === 'molino' ? 'Molino' : 'Máquina'}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <TextInput style={s.input} placeholder="Marca" value={marca} onChangeText={setMarca} />
-          <TextInput style={s.input} placeholder="Modelo" value={modelo} onChangeText={setModelo} />
-          <TextInput style={s.input} placeholder="Código (ej. MOL-06)" autoCapitalize="characters" value={codigo} onChangeText={setCodigo} />
-          <Button title="Agregar equipo" onPress={agregar} />
-        </View>
-      }
-      renderItem={({ item }) => (
-        <Pressable style={s.row} onLongPress={() => borrar(item)}>
-          <Text style={s.title}>{item.marca} {item.modelo}</Text>
-          <Text style={s.small}>{item.tipo === 'molino' ? 'Molino' : 'Máquina'} · {item.identificadorLocal}</Text>
-        </Pressable>
-      )}
-      ListFooterComponent={<Text style={s.hint}>Mantén presionado un equipo para eliminarlo.</Text>}
-    />
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={s.contenedor} contentInsetAdjustmentBehavior="automatic">
+        {GRUPOS.map((g) => {
+          const lista = equipos.filter((e) => e.tipo === g.tipo);
+          return (
+            <Seccion key={g.tipo} titulo={`${g.titulo} (${lista.length})`}
+              accion={<Boton titulo="Agregar" icono="add" compacto variante="texto" onPress={() => navigation.navigate('EquipoForm', { tipo: g.tipo })} />}>
+              {lista.length === 0 && (
+                <Tarjeta style={{ borderStyle: 'dashed' }} onPress={() => navigation.navigate('EquipoForm', { tipo: g.tipo })}>
+                  <Text style={texto.pequeno}>{g.vacio}</Text>
+                </Tarjeta>
+              )}
+              {lista.map((e) => (
+                <Tarjeta key={e.id} onPress={() => navigation.navigate('EquipoForm', { idEquipo: e.id })}>
+                  <Fila style={{ gap: espacio.m }}>
+                    <View style={s.icono}><Ionicons name={g.icono} size={22} color={color.primario} /></View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.nombre}>{e.marca} {e.modelo}</Text>
+                      <Text style={texto.pequeno}>Código {e.identificadorLocal}</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={color.textoTenue} />
+                  </Fila>
+                </Tarjeta>
+              ))}
+            </Seccion>
+          );
+        })}
+      </ScrollView>
+      <BotonFlotante titulo="Nuevo equipo" onPress={() => navigation.navigate('EquipoForm', {})} />
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  form: { padding: 16, gap: 8, borderBottomWidth: 1, borderColor: '#ddd' },
-  chips: { flexDirection: 'row', gap: 8 },
-  chip: { borderWidth: 1, borderColor: '#bbb', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 6 },
-  chipOn: { backgroundColor: '#4b2e1e', borderColor: '#4b2e1e' },
-  chipTextOn: { color: '#fff' },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8 },
-  row: { padding: 16, borderBottomWidth: 1, borderColor: '#eee' },
-  title: { fontSize: 16, fontWeight: '600' },
-  small: { color: '#666', marginTop: 2 },
-  hint: { textAlign: 'center', color: '#999', padding: 16 },
+  contenedor: { padding: espacio.l, gap: espacio.xl, paddingBottom: 100 },
+  icono: { width: 44, height: 44, borderRadius: radio.m, backgroundColor: color.primarioSuave, alignItems: 'center', justifyContent: 'center' },
+  nombre: { fontSize: 16, fontWeight: '700', color: color.texto },
 });
