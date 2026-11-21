@@ -2,11 +2,18 @@
 // para que la app se vea y se comporte igual en todas partes.
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  ActivityIndicator, Animated, Pressable, StyleSheet, Text, TextInput, View,
+  ActivityIndicator, Animated, Platform, Pressable, StyleSheet, Text, TextInput, View,
   type StyleProp, type TextInputProps, type ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { color, DIAGNOSTICO, espacio, radio, sombra, texto, type Diagnostico } from './tema';
+
+// En web, Chrome dibuja su anillo de foco aunque el grosor sea 0; los campos ya marcan el foco con su borde.
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  const estilo = document.createElement('style');
+  estilo.textContent = 'input:focus, textarea:focus { outline: none; }';
+  document.head.appendChild(estilo);
+}
 
 export type Icono = keyof typeof Ionicons.glyphMap;
 

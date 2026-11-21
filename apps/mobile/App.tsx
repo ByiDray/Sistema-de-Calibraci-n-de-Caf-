@@ -3,7 +3,7 @@ import { DefaultTheme, NavigationContainer, type Theme } from '@react-navigation
 import { createNativeStackNavigator, type NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import GranosScreen from './src/screens/GranosScreen';
 import GranoFormScreen from './src/screens/GranoFormScreen';
 import LotesScreen from './src/screens/LotesScreen';
@@ -64,14 +64,28 @@ export default function App() {
     <SafeAreaProvider>
       <ProveedorAvisos>
         <NavigationContainer theme={tema}>
+          <Pestanas />
+        </NavigationContainer>
+        <StatusBar style="dark" />
+      </ProveedorAvisos>
+    </SafeAreaProvider>
+  );
+}
+
+// Barra un poco más alta que la predeterminada para que ícono y etiqueta no se recorten.
+function Pestanas() {
+  const inset = useSafeAreaInsets();
+  return (
           <Tabs.Navigator
             screenOptions={({ route }) => ({
               headerShown: false,
               tabBarActiveTintColor: color.primario,
               tabBarInactiveTintColor: color.textoTenue,
-              tabBarStyle: { backgroundColor: color.superficie, borderTopColor: color.borde },
-              tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
-              tabBarIcon: ({ color: c, focused, size }) => (
+              tabBarStyle: {
+                backgroundColor: color.superficie, borderTopColor: color.borde,
+                height: 66 + inset.bottom, paddingTop: 4, paddingBottom: 4 + inset.bottom,
+              },
+              tabBarLabelStyle: { fontSize: 12, lineHeight: 16, fontWeight: '600' },              tabBarIcon: ({ color: c, focused, size }) => (
                 <Ionicons
                   size={size}
                   color={c}
@@ -83,9 +97,5 @@ export default function App() {
             <Tabs.Screen name="CafeTab" component={CafeStack} options={{ title: 'Cafés' }} />
             <Tabs.Screen name="EquiposTab" component={EquiposStack} options={{ title: 'Equipos' }} />
           </Tabs.Navigator>
-        </NavigationContainer>
-        <StatusBar style="dark" />
-      </ProveedorAvisos>
-    </SafeAreaProvider>
   );
 }
