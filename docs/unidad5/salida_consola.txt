@@ -1,0 +1,818 @@
+[CS01] Todos los granos ordenados por nombre
+ id_grano |      nombre_cafe       |        finca        |        productor         | pais_origen |     region      | varietal | proceso | puntuacion_sca |   fecha_creacion    
+----------+------------------------+---------------------+--------------------------+-------------+-----------------+----------+---------+----------------+---------------------
+        6 | Antigua Bourbon        | Finca Vista Hermosa | Ana Lucía Morales        | Guatemala   | Antigua         | Bourbon  | Lavado  |          87.00 | 2026-09-21 15:55:00
+        8 | Cajamarca Natural      | Finca San Jorge     | Asociación Cajamarca     | Perú        | Cajamarca       | Typica   | Natural |          83.00 | 2026-09-23 18:30:00
+        1 | Chiapas Altura Selecta | Finca La Esperanza  | Cooperativa Sierra Madre | México      | Chiapas         | Typica   | Lavado  |          86.50 | 2026-09-15 16:30:00
+        2 | Geisha Boquete         | Finca Lérida        | Hacienda La Esmeralda    | Panamá      | Boquete         | Geisha   | Lavado  |          92.50 | 2026-09-16 15:00:00
+        5 | Honey Cerrado          | Fazenda Santa Clara | Familia Almeida          | Brasil      | Cerrado Mineiro | Bourbon  | Honey   |          85.25 | 2026-09-19 20:20:00
+        3 | Huila Natural          | Finca El Paraíso    | Familia Rojas            | Colombia    | Huila           | Caturra  | Natural |          84.75 | 2026-09-17 17:15:00
+        7 | Nyeri AA               | Gakuyuini           | Cooperativa Nyeri        | Kenia       | Nyeri           | SL28     | Lavado  |          89.50 | 2026-09-22 16:05:00
+        9 | Sidama Natural         | Bombe               | Unión Sidama             | Etiopía     | Sidama          | Heirloom | Natural |          87.75 | 2026-09-24 14:10:00
+       10 | Tolima Honey           | Finca La Florida    | Carlos Mendoza           | Colombia    | Tolima          | Castillo | Honey   |          82.50 | 2026-09-25 21:45:00
+        4 | Yirgacheffe Washed     | Kebele Konga        | Cooperativa Konga        | Etiopía     | Yirgacheffe     | Heirloom | Lavado  |          88.00 | 2026-09-18 14:40:00
+(10 filas)
+
+[CS02] Proyección: nombre, país y puntuación SCA
+      nombre_cafe       | pais_origen | puntuacion_sca 
+------------------------+-------------+----------------
+ Chiapas Altura Selecta | México      |          86.50
+ Geisha Boquete         | Panamá      |          92.50
+ Huila Natural          | Colombia    |          84.75
+ Yirgacheffe Washed     | Etiopía     |          88.00
+ Honey Cerrado          | Brasil      |          85.25
+ Antigua Bourbon        | Guatemala   |          87.00
+ Nyeri AA               | Kenia       |          89.50
+ Cajamarca Natural      | Perú        |          83.00
+ Sidama Natural         | Etiopía     |          87.75
+ Tolima Honey           | Colombia    |          82.50
+(10 filas)
+
+[CS03] Granos de proceso Natural
+    nombre_cafe    | pais_origen 
+-------------------+-------------
+ Cajamarca Natural | Perú
+ Huila Natural     | Colombia
+ Sidama Natural    | Etiopía
+(3 filas)
+
+[CS04] Granos con puntuación SCA de 88 o más
+    nombre_cafe     | puntuacion_sca 
+--------------------+----------------
+ Geisha Boquete     |          92.50
+ Nyeri AA           |          89.50
+ Yirgacheffe Washed |          88.00
+(3 filas)
+
+[CS05] Granos con SCA entre 85 y 88 (BETWEEN)
+      nombre_cafe       | puntuacion_sca 
+------------------------+----------------
+ Honey Cerrado          |          85.25
+ Chiapas Altura Selecta |          86.50
+ Antigua Bourbon        |          87.00
+ Sidama Natural         |          87.75
+ Yirgacheffe Washed     |          88.00
+(5 filas)
+
+[CS06] Granos de México, Colombia o Perú (IN)
+      nombre_cafe       | pais_origen 
+------------------------+-------------
+ Huila Natural          | Colombia
+ Tolima Honey           | Colombia
+ Chiapas Altura Selecta | México
+ Cajamarca Natural      | Perú
+(4 filas)
+
+[CS07] Granos cuyo nombre contiene "natural" sin importar mayúsculas (ILIKE)
+    nombre_cafe    | proceso 
+-------------------+---------
+ Cajamarca Natural | Natural
+ Huila Natural     | Natural
+ Sidama Natural    | Natural
+(3 filas)
+
+[CS08] Calibraciones sin notas del barista (IS NULL)
+ id_calibracion | barista_nombre |       fecha_hora        
+----------------+----------------+-------------------------
+             12 | Adriel         | 2026-10-21 01:56:21.019
+             22 | Sofia          | 2026-11-19 13:54:27.182
+(2 filas)
+
+[CS09] Los 3 granos con mejor puntuación (ORDER BY + LIMIT)
+    nombre_cafe     | puntuacion_sca 
+--------------------+----------------
+ Geisha Boquete     |          92.50
+ Nyeri AA           |          89.50
+ Yirgacheffe Washed |          88.00
+(3 filas)
+
+[CS10] Países de origen distintos (DISTINCT)
+ pais_origen 
+-------------
+ Brasil
+ Colombia
+ Etiopía
+ Guatemala
+ Kenia
+ México
+ Panamá
+ Perú
+(8 filas)
+
+[CS11] Porcentaje de existencia que queda en cada lote (expresión con alias)
+ codigo_lote | peso_actual_g | peso_inicial_g | porcentaje_restante 
+-------------+---------------+----------------+---------------------
+ LT-2026-004 |        500.00 |         500.00 |               100.0
+ LT-2026-010 |       1000.00 |        1000.00 |               100.0
+ LT-2026-007 |        975.00 |        1000.00 |                97.5
+ LT-2026-001 |        850.50 |        1000.00 |                85.1
+ LT-2026-009 |        830.00 |        1000.00 |                83.0
+ LT-2026-005 |        610.25 |        1000.00 |                61.0
+ LT-2026-002 |        420.00 |        1000.00 |                42.0
+ LT-2026-006 |        180.00 |         750.00 |                24.0
+ LT-2026-003 |          0.00 |        1000.00 |                 0.0
+ LT-2026-008 |          0.00 |         500.00 |                 0.0
+(10 filas)
+
+[CS12] Lotes activos de tueste Medio u Oscuro (AND / OR)
+ codigo_lote | nivel_tueste 
+-------------+--------------
+ LT-2026-001 | Medio
+ LT-2026-005 | Oscuro
+ LT-2026-006 | Medio
+ LT-2026-009 | Medio
+ LT-2026-010 | Oscuro
+(5 filas)
+
+[CS13] Equipos que no son molino (NOT)
+ identificador_local |    marca    |     modelo      
+---------------------+-------------+-----------------
+ MAQ-01              | La Marzocco | Linea Mini
+ MAQ-02              | Rocket      | Appartamento
+ MAQ-03              | Lelit       | Bianca
+ MAQ-04              | Breville    | Barista Express
+ MAQ-05              | La Marzocco | GS3
+ MAQ-06              | Magister    | Stilo ES100
+(6 filas)
+
+[CS14] Lotes tostados del 1 de octubre de 2026 en adelante (fechas)
+ codigo_lote | fecha_tueste 
+-------------+--------------
+ LT-2026-005 | 2026-10-01
+ LT-2026-006 | 2026-10-02
+ LT-2026-007 | 2026-10-04
+ LT-2026-008 | 2026-10-05
+ LT-2026-009 | 2026-10-07
+ LT-2026-010 | 2026-10-09
+(6 filas)
+
+[CS15] Calibraciones hechas por la tarde, de 15:00 en adelante (EXTRACT)
+ id_calibracion |       fecha_hora        | hora 
+----------------+-------------------------+------
+              2 | 2026-10-03 15:10:00     |   15
+              3 | 2026-10-03 15:30:00     |   15
+              4 | 2026-10-05 16:00:00     |   16
+              5 | 2026-10-06 17:20:00     |   17
+              7 | 2026-10-08 15:45:00     |   15
+              8 | 2026-10-09 16:30:00     |   16
+             10 | 2026-10-12 18:00:00     |   18
+             19 | 2026-10-22 15:53:02.606 |   15
+(8 filas)
+
+[CS16] Clasificación de cada grano según su SCA (CASE)
+      nombre_cafe       | puntuacion_sca | clasificacion 
+------------------------+----------------+---------------
+ Geisha Boquete         |          92.50 | Excepcional
+ Nyeri AA               |          89.50 | Excelente
+ Yirgacheffe Washed     |          88.00 | Excelente
+ Sidama Natural         |          87.75 | Excelente
+ Antigua Bourbon        |          87.00 | Excelente
+ Chiapas Altura Selecta |          86.50 | Excelente
+ Honey Cerrado          |          85.25 | Excelente
+ Huila Natural          |          84.75 | Muy bueno
+ Cajamarca Natural      |          83.00 | Muy bueno
+ Tolima Honey           |          82.50 | Muy bueno
+(10 filas)
+
+[CS17] Calibraciones sobreextraídas
+ id_calibracion | ey_porcentaje | barista_nombre 
+----------------+---------------+----------------
+             12 |         46.00 | Adriel
+             19 |         37.69 | Sofia
+             14 |         37.05 | Adriel
+(3 filas)
+
+[CS18] Calibraciones en el rango ideal de EY (18 a 22 %), mejor sabor primero
+ id_calibracion | ey_porcentaje | calificacion_sabor 
+----------------+---------------+--------------------
+              8 |         20.80 |                9.0
+              1 |         19.80 |                8.0
+              5 |         19.08 |                8.0
+              6 |         19.40 |                8.0
+             10 |         20.00 |                8.0
+             22 |         20.70 |                8.0
+              2 |         19.20 |                7.0
+              7 |         18.34 |                7.0
+              3 |         19.79 |                6.0
+(9 filas)
+
+[CS19] Segunda página de calibraciones, 5 por página (LIMIT / OFFSET)
+ id_calibracion |     fecha_hora      | barista_nombre 
+----------------+---------------------+----------------
+              6 | 2026-10-07 14:05:00 | Luis Torres
+              7 | 2026-10-08 15:45:00 | Ana Pérez
+              8 | 2026-10-09 16:30:00 | Carlos Ramírez
+              9 | 2026-10-10 14:50:00 | Luis Torres
+             10 | 2026-10-12 18:00:00 | Ana Pérez
+(5 filas)
+
+[CS20] Lotes inactivos
+ codigo_lote | peso_actual_g 
+-------------+---------------
+ LT-2026-003 |          0.00
+ LT-2026-008 |          0.00
+(2 filas)
+
+[CS21] Nombre completo de cada equipo en mayúsculas (funciones de texto)
+ identificador_local |          equipo          | largo_modelo 
+---------------------+--------------------------+--------------
+ MAQ-01              | LA MARZOCCO LINEA MINI   |           10
+ MAQ-02              | ROCKET APPARTAMENTO      |           12
+ MAQ-03              | LELIT BIANCA             |            6
+ MAQ-04              | BREVILLE BARISTA EXPRESS |           15
+ MAQ-05              | LA MARZOCCO GS3          |            3
+ MAQ-06              | MAGISTER STILO ES100     |           11
+ MOL-01              | EUREKA MIGNON SPECIALITA |           17
+ MOL-02              | MAZZER SUPER JOLLY       |           11
+ MOL-03              | NICHE ZERO               |            4
+ MOL-04              | BARATZA ENCORE ESP       |           10
+ MOL-05              | EUREKA MIGNON SILENZIO   |           15
+ MOL-06              | FIORENZATO F64 EVO       |            7
+(12 filas)
+
+[CS22] Granos con finca registrada, ordenados por región
+      nombre_cafe       |        finca        |     region      
+------------------------+---------------------+-----------------
+ Antigua Bourbon        | Finca Vista Hermosa | Antigua
+ Geisha Boquete         | Finca Lérida        | Boquete
+ Cajamarca Natural      | Finca San Jorge     | Cajamarca
+ Honey Cerrado          | Fazenda Santa Clara | Cerrado Mineiro
+ Chiapas Altura Selecta | Finca La Esperanza  | Chiapas
+ Huila Natural          | Finca El Paraíso    | Huila
+ Nyeri AA               | Gakuyuini           | Nyeri
+ Sidama Natural         | Bombe               | Sidama
+ Tolima Honey           | Finca La Florida    | Tolima
+ Yirgacheffe Washed     | Kebele Konga        | Yirgacheffe
+(10 filas)
+
+[CS23] Notas de cata que mencionan chocolate
+ id_lote |     descriptor      
+---------+---------------------
+       1 | Chocolate amargo
+       3 | Chocolate con leche
+(2 filas)
+
+[CS24] Notas del barista, o "Sin notas" si no hay (COALESCE)
+ id_calibracion |               notas                
+----------------+------------------------------------
+              1 | Chocolate y caramelo, acidez suave
+              2 | Jazmín, cuerpo ligero
+              3 | Bergamota, final corto
+              4 | Acidez punzante, poco dulzor
+              5 | Nuez y cacao, cuerpo medio
+              6 | Caramelo, dulzor a panela
+              7 | Frutos rojos, acidez media
+              8 | Chocolate con leche, final largo
+              9 | Sabor plano, amargo leve
+             10 | Manzana verde, dulzor brillante
+             12 | Sin notas
+             14 | Chocolate
+             19 | Rico
+             22 | Sin notas
+(14 filas)
+
+[CS25] Extracciones de 25 a 30 segundos a 9 bar
+ id_calibracion | tiempo_segundos | presion_bar 
+----------------+-----------------+-------------
+              1 |            28.0 |         9.0
+              2 |            30.0 |         9.0
+              3 |            27.5 |         9.0
+              5 |            25.0 |         9.0
+              6 |            28.5 |         9.0
+             10 |            29.5 |         9.0
+             12 |            30.0 |         9.0
+             14 |            26.0 |         9.0
+             22 |            28.0 |         9.0
+(9 filas)
+
+[JN01] Cada lote con el nombre de su café (INNER JOIN)
+ codigo_lote |      nombre_cafe       |    tostaduria    
+-------------+------------------------+------------------
+ LT-2026-001 | Chiapas Altura Selecta | Tostaduría Local
+ LT-2026-002 | Geisha Boquete         | Tostaduría Local
+ LT-2026-003 | Huila Natural          | Tostaduría Norte
+ LT-2026-004 | Yirgacheffe Washed     | Tostaduría Local
+ LT-2026-005 | Honey Cerrado          | Tostaduría Norte
+ LT-2026-006 | Antigua Bourbon        | Tostaduría Local
+ LT-2026-007 | Nyeri AA               | Tostaduría Norte
+ LT-2026-008 | Cajamarca Natural      | Tostaduría Local
+ LT-2026-009 | Sidama Natural         | Tostaduría Norte
+ LT-2026-010 | Tolima Honey           | Tostaduría Local
+(10 filas)
+
+[JN02] Calibraciones con su lote y su café (tres tablas)
+ id_calibracion | codigo_lote |      nombre_cafe       | ey_porcentaje 
+----------------+-------------+------------------------+---------------
+              1 | LT-2026-001 | Chiapas Altura Selecta |         19.80
+              2 | LT-2026-002 | Geisha Boquete         |         19.20
+              3 | LT-2026-002 | Geisha Boquete         |         19.79
+              4 | LT-2026-004 | Yirgacheffe Washed     |         17.80
+              5 | LT-2026-005 | Honey Cerrado          |         19.08
+              6 | LT-2026-006 | Antigua Bourbon        |         19.40
+              7 | LT-2026-007 | Nyeri AA               |         18.34
+              8 | LT-2026-009 | Sidama Natural         |         20.80
+              9 | LT-2026-010 | Tolima Honey           |         16.50
+             10 | LT-2026-005 | Honey Cerrado          |         20.00
+             12 | LT-2026-001 | Chiapas Altura Selecta |         46.00
+             14 | LT-2026-001 | Chiapas Altura Selecta |         37.05
+             19 | LT-2026-001 | Chiapas Altura Selecta |         37.69
+             22 | LT-2026-001 | Chiapas Altura Selecta |         20.70
+(14 filas)
+
+[JN03] Calibraciones con el molino y la máquina usados (misma tabla dos veces)
+ id_calibracion | molino | maquina 
+----------------+--------+---------
+              1 | MOL-01 | MAQ-01
+              2 | MOL-02 | MAQ-02
+              3 | MOL-02 | MAQ-02
+              4 | MOL-03 | MAQ-03
+              5 | MOL-04 | MAQ-04
+              6 | MOL-01 | MAQ-01
+              7 | MOL-02 | MAQ-02
+              8 | MOL-05 | MAQ-05
+              9 | MOL-03 | MAQ-03
+             10 | MOL-04 | MAQ-04
+             12 | MOL-06 | MAQ-06
+             14 | MOL-05 | MAQ-02
+             19 | MOL-06 | MAQ-01
+             22 | MOL-06 | MAQ-01
+(14 filas)
+
+[JN04] Todos los granos con sus lotes, aunque no tengan (LEFT JOIN)
+      nombre_cafe       | codigo_lote 
+------------------------+-------------
+ Antigua Bourbon        | LT-2026-006
+ Cajamarca Natural      | LT-2026-008
+ Chiapas Altura Selecta | LT-2026-001
+ Geisha Boquete         | LT-2026-002
+ Honey Cerrado          | LT-2026-005
+ Huila Natural          | LT-2026-003
+ Nyeri AA               | LT-2026-007
+ Sidama Natural         | LT-2026-009
+ Tolima Honey           | LT-2026-010
+ Yirgacheffe Washed     | LT-2026-004
+(10 filas)
+
+[JN05] Lotes que nunca se han calibrado (LEFT JOIN ... IS NULL)
+ codigo_lote 
+-------------
+ LT-2026-003
+ LT-2026-008
+(2 filas)
+
+[JN06] Calibraciones por molino, incluidos los molinos sin uso (RIGHT JOIN)
+ identificador_local | id_calibracion 
+---------------------+----------------
+ MOL-01              |              1
+ MOL-01              |              6
+ MOL-02              |              2
+ MOL-02              |              3
+ MOL-02              |              7
+ MOL-03              |              4
+ MOL-03              |              9
+ MOL-04              |              5
+ MOL-04              |             10
+ MOL-05              |              8
+ MOL-05              |             14
+ MOL-06              |             12
+ MOL-06              |             19
+ MOL-06              |             22
+(14 filas)
+
+[JN07] Lotes y notas de cata, aparezcan o no en la otra tabla (FULL OUTER JOIN)
+ codigo_lote |     descriptor      
+-------------+---------------------
+ LT-2026-001 | Caramelo
+ LT-2026-001 | Chocolate amargo
+ LT-2026-002 | Bergamota
+ LT-2026-002 | Jazmín
+ LT-2026-003 | Chocolate con leche
+ LT-2026-004 | Limón
+ LT-2026-005 | Nuez
+ LT-2026-006 | Cacao
+ LT-2026-007 | Frutos rojos
+ LT-2026-008 | Manzana verde
+ LT-2026-009 | (nulo)
+ LT-2026-010 | (nulo)
+(12 filas)
+
+[JN08] Notas de cata con su lote y su café
+     descriptor      | codigo_lote |      nombre_cafe       
+---------------------+-------------+------------------------
+ Cacao               | LT-2026-006 | Antigua Bourbon
+ Manzana verde       | LT-2026-008 | Cajamarca Natural
+ Caramelo            | LT-2026-001 | Chiapas Altura Selecta
+ Chocolate amargo    | LT-2026-001 | Chiapas Altura Selecta
+ Bergamota           | LT-2026-002 | Geisha Boquete
+ Jazmín              | LT-2026-002 | Geisha Boquete
+ Nuez                | LT-2026-005 | Honey Cerrado
+ Chocolate con leche | LT-2026-003 | Huila Natural
+ Frutos rojos        | LT-2026-007 | Nyeri AA
+ Limón               | LT-2026-004 | Yirgacheffe Washed
+(10 filas)
+
+[JN09] Calibraciones equilibradas de cafés lavados (JOIN con filtro)
+ id_calibracion |      nombre_cafe       | ey_porcentaje 
+----------------+------------------------+---------------
+              1 | Chiapas Altura Selecta |         19.80
+              2 | Geisha Boquete         |         19.20
+              3 | Geisha Boquete         |         19.79
+              6 | Antigua Bourbon        |         19.40
+              7 | Nyeri AA               |         18.34
+             22 | Chiapas Altura Selecta |         20.70
+(6 filas)
+
+[JN10] Pares de granos del mismo país (SELF JOIN)
+      grano_a       |    grano_b     | pais_origen 
+--------------------+----------------+-------------
+ Huila Natural      | Tolima Honey   | Colombia
+ Yirgacheffe Washed | Sidama Natural | Etiopía
+(2 filas)
+
+[JN11] Combinaciones posibles de molino y máquina (CROSS JOIN)
+ molino | maquina 
+--------+---------
+ MOL-01 | MAQ-01
+ MOL-01 | MAQ-02
+ MOL-01 | MAQ-03
+ MOL-01 | MAQ-04
+ MOL-01 | MAQ-05
+ MOL-01 | MAQ-06
+ MOL-02 | MAQ-01
+ MOL-02 | MAQ-02
+ MOL-02 | MAQ-03
+ MOL-02 | MAQ-04
+ MOL-02 | MAQ-05
+ MOL-02 | MAQ-06
+ MOL-03 | MAQ-01
+ MOL-03 | MAQ-02
+ MOL-03 | MAQ-03
+ MOL-03 | MAQ-04
+ MOL-03 | MAQ-05
+ MOL-03 | MAQ-06
+ MOL-04 | MAQ-01
+ MOL-04 | MAQ-02
+ MOL-04 | MAQ-03
+ MOL-04 | MAQ-04
+ MOL-04 | MAQ-05
+ MOL-04 | MAQ-06
+ MOL-05 | MAQ-01
+ MOL-05 | MAQ-02
+ MOL-05 | MAQ-03
+ MOL-05 | MAQ-04
+ MOL-05 | MAQ-05
+ MOL-05 | MAQ-06
+ MOL-06 | MAQ-01
+ MOL-06 | MAQ-02
+ MOL-06 | MAQ-03
+ MOL-06 | MAQ-04
+ MOL-06 | MAQ-05
+ MOL-06 | MAQ-06
+(36 filas)
+
+[JN12] Notas de cata con su lote (JOIN ... USING)
+ codigo_lote |     descriptor      
+-------------+---------------------
+ LT-2026-001 | Caramelo
+ LT-2026-001 | Chocolate amargo
+ LT-2026-002 | Bergamota
+ LT-2026-002 | Jazmín
+ LT-2026-003 | Chocolate con leche
+ LT-2026-004 | Limón
+ LT-2026-005 | Nuez
+ LT-2026-006 | Cacao
+ LT-2026-007 | Frutos rojos
+ LT-2026-008 | Manzana verde
+(10 filas)
+
+[JN13] Ficha completa de cada calibración (cinco tablas)
+ id_calibracion |      nombre_cafe       | codigo_lote |          molino          |         maquina          | ratio_calculado |  diagnostico  
+----------------+------------------------+-------------+--------------------------+--------------------------+-----------------+---------------
+              1 | Chiapas Altura Selecta | LT-2026-001 | Eureka Mignon Specialita | La Marzocco Linea Mini   | 1:2.0           | EQUILIBRADA
+              2 | Geisha Boquete         | LT-2026-002 | Mazzer Super Jolly       | Rocket Appartamento      | 1:2.0           | EQUILIBRADA
+              3 | Geisha Boquete         | LT-2026-002 | Mazzer Super Jolly       | Rocket Appartamento      | 1:2.1           | EQUILIBRADA
+              4 | Yirgacheffe Washed     | LT-2026-004 | Niche Zero               | Lelit Bianca             | 1:2.0           | SUBEXTRAIDA
+              5 | Honey Cerrado          | LT-2026-005 | Baratza Encore ESP       | Breville Barista Express | 1:1.9           | EQUILIBRADA
+              6 | Antigua Bourbon        | LT-2026-006 | Eureka Mignon Specialita | La Marzocco Linea Mini   | 1:2.0           | EQUILIBRADA
+              7 | Nyeri AA               | LT-2026-007 | Mazzer Super Jolly       | Rocket Appartamento      | 1:2.0           | EQUILIBRADA
+              8 | Sidama Natural         | LT-2026-009 | Eureka Mignon Silenzio   | La Marzocco GS3          | 1:2.0           | EQUILIBRADA
+              9 | Tolima Honey           | LT-2026-010 | Niche Zero               | Lelit Bianca             | 1:1.8           | SUBEXTRAIDA
+             10 | Honey Cerrado          | LT-2026-005 | Baratza Encore ESP       | Breville Barista Express | 1:2.0           | EQUILIBRADA
+             12 | Chiapas Altura Selecta | LT-2026-001 | Fiorenzato F64 EVO       | Magister Stilo ES100     | 1:2.0           | SOBREEXTRAIDA
+             14 | Chiapas Altura Selecta | LT-2026-001 | Eureka Mignon Silenzio   | Rocket Appartamento      | 1:2.0           | SOBREEXTRAIDA
+             19 | Chiapas Altura Selecta | LT-2026-001 | Fiorenzato F64 EVO       | La Marzocco Linea Mini   | 1:2.1           | SOBREEXTRAIDA
+             22 | Chiapas Altura Selecta | LT-2026-001 | Fiorenzato F64 EVO       | La Marzocco Linea Mini   | 1:2.3           | EQUILIBRADA
+(14 filas)
+
+[JN14] Cada lote con su calibración más reciente (LEFT JOIN LATERAL)
+ codigo_lote |   ultima_calibracion    | ey_porcentaje 
+-------------+-------------------------+---------------
+ LT-2026-001 | 2026-11-19 13:54:27.182 |         20.70
+ LT-2026-002 | 2026-10-03 15:30:00     |         19.79
+ LT-2026-003 | (nulo)                  |        (nulo)
+ LT-2026-004 | 2026-10-05 16:00:00     |         17.80
+ LT-2026-005 | 2026-10-12 18:00:00     |         20.00
+ LT-2026-006 | 2026-10-07 14:05:00     |         19.40
+ LT-2026-007 | 2026-10-08 15:45:00     |         18.34
+ LT-2026-008 | (nulo)                  |        (nulo)
+ LT-2026-009 | 2026-10-09 16:30:00     |         20.80
+ LT-2026-010 | 2026-10-10 14:50:00     |         16.50
+(10 filas)
+
+[JN15] Calibraciones hechas más de 30 días después del tueste (JOIN con condición no igual)
+ codigo_lote | fecha_tueste |       fecha_hora        
+-------------+--------------+-------------------------
+ LT-2026-001 | 2026-09-20   | 2026-10-21 01:56:21.019
+ LT-2026-001 | 2026-09-20   | 2026-10-21 02:45:43.058
+ LT-2026-001 | 2026-09-20   | 2026-10-22 15:53:02.606
+ LT-2026-001 | 2026-09-20   | 2026-11-19 13:54:27.182
+(4 filas)
+
+[AG01] Total de granos registrados (COUNT)
+ total_granos 
+--------------
+           10
+(1 fila)
+
+[AG02] Granos por proceso (COUNT + GROUP BY)
+ proceso | granos 
+---------+--------
+ Lavado  |      5
+ Natural |      3
+ Honey   |      2
+(3 filas)
+
+[AG03] Puntuación SCA promedio por país (AVG)
+ pais_origen | sca_promedio 
+-------------+--------------
+ Panamá      |        92.50
+ Kenia       |        89.50
+ Etiopía     |        87.88
+ Guatemala   |        87.00
+ México      |        86.50
+ Brasil      |        85.25
+ Colombia    |        83.63
+ Perú        |        83.00
+(8 filas)
+
+[AG04] Puntuación SCA más alta y más baja (MAX / MIN)
+ sca_maxima | sca_minima 
+------------+------------
+      92.50 |      82.50
+(1 fila)
+
+[AG05] Gramos en existencia de los lotes activos (SUM)
+ gramos_disponibles 
+--------------------
+            5365.75
+(1 fila)
+
+[AG06] Calibraciones por diagnóstico
+  diagnostico  | calibraciones 
+---------------+---------------
+ EQUILIBRADA   |             9
+ SOBREEXTRAIDA |             3
+ SUBEXTRAIDA   |             2
+(3 filas)
+
+[AG07] EY y sabor promedio de cada lote calibrado
+ codigo_lote | calibraciones | ey_promedio | sabor_promedio 
+-------------+---------------+-------------+----------------
+ LT-2026-001 |             5 |       32.25 |            7.8
+ LT-2026-002 |             2 |       19.50 |            6.5
+ LT-2026-004 |             1 |       17.80 |            5.0
+ LT-2026-005 |             2 |       19.54 |            8.0
+ LT-2026-006 |             1 |       19.40 |            8.0
+ LT-2026-007 |             1 |       18.34 |            7.0
+ LT-2026-009 |             1 |       20.80 |            9.0
+ LT-2026-010 |             1 |       16.50 |            4.0
+(8 filas)
+
+[AG08] Lotes con más de una calibración (HAVING)
+ id_lote | calibraciones 
+---------+---------------
+       1 |             5
+       2 |             2
+       5 |             2
+(3 filas)
+
+[AG09] Número de baristas distintos (COUNT DISTINCT)
+ baristas 
+----------
+        5
+(1 fila)
+
+[AG10] Calibraciones y sabor promedio por barista
+ barista_nombre | calibraciones | sabor_promedio 
+----------------+---------------+----------------
+ Carlos Ramírez |             3 |            8.3
+ Sofia          |             2 |            8.0
+ Adriel         |             2 |            7.5
+ Ana Pérez      |             4 |            7.0
+ Luis Torres    |             3 |            5.7
+(5 filas)
+
+[AG11] Veces que se usó cada molino, incluidos los que no (COUNT + LEFT JOIN)
+ identificador_local | usos 
+---------------------+------
+ MOL-02              |    3
+ MOL-06              |    3
+ MOL-01              |    2
+ MOL-03              |    2
+ MOL-04              |    2
+ MOL-05              |    2
+(6 filas)
+
+[AG12] Notas de cata de cada lote en una sola línea (STRING_AGG)
+ codigo_lote |           notas            
+-------------+----------------------------
+ LT-2026-001 | Caramelo, Chocolate amargo
+ LT-2026-002 | Bergamota, Jazmín
+ LT-2026-003 | Chocolate con leche
+ LT-2026-004 | Limón
+ LT-2026-005 | Nuez
+ LT-2026-006 | Cacao
+ LT-2026-007 | Frutos rojos
+ LT-2026-008 | Manzana verde
+(8 filas)
+
+[AG13] Receta promedio por máquina: dosis, bebida y tiempo
+ identificador_local | dosis | bebida | tiempo 
+---------------------+-------+--------+--------
+ MAQ-01              | 17.00 |  35.38 |   29.1
+ MAQ-02              | 18.00 |  36.18 |   27.6
+ MAQ-03              | 18.25 |  35.00 |   26.5
+ MAQ-04              | 18.00 |  35.00 |   27.3
+ MAQ-05              | 19.00 |  38.00 |   31.0
+ MAQ-06              | 17.50 |  35.00 |   30.0
+(6 filas)
+
+[AG14] Consumo por nivel de tueste: lotes, gramos iniciales, restantes y % consumido
+ nivel_tueste | lotes | gramos_iniciales | gramos_restantes | porcentaje_consumido 
+--------------+-------+------------------+------------------+----------------------
+ Claro        |     3 |          2500.00 |          1895.00 |                 24.2
+ Medio        |     5 |          4250.00 |          1860.50 |                 56.2
+ Oscuro       |     2 |          2000.00 |          1610.25 |                 19.5
+(3 filas)
+
+[AG15] Calibraciones y EY promedio por mes (DATE_TRUNC)
+   mes   | calibraciones | ey_promedio 
+---------+---------------+-------------
+ 2026-10 |            13 |       23.96
+ 2026-11 |             1 |       20.70
+(2 filas)
+
+[VI01] Vista v_ficha_calibracion: cada calibración con su café, lote y equipos
+CREATE VIEW
+ id_calibracion |      nombre_cafe       | codigo_lote | ratio_calculado |  diagnostico  
+----------------+------------------------+-------------+-----------------+---------------
+              1 | Chiapas Altura Selecta | LT-2026-001 | 1:2.0           | EQUILIBRADA
+              2 | Geisha Boquete         | LT-2026-002 | 1:2.0           | EQUILIBRADA
+              3 | Geisha Boquete         | LT-2026-002 | 1:2.1           | EQUILIBRADA
+              4 | Yirgacheffe Washed     | LT-2026-004 | 1:2.0           | SUBEXTRAIDA
+              5 | Honey Cerrado          | LT-2026-005 | 1:1.9           | EQUILIBRADA
+              6 | Antigua Bourbon        | LT-2026-006 | 1:2.0           | EQUILIBRADA
+              7 | Nyeri AA               | LT-2026-007 | 1:2.0           | EQUILIBRADA
+              8 | Sidama Natural         | LT-2026-009 | 1:2.0           | EQUILIBRADA
+              9 | Tolima Honey           | LT-2026-010 | 1:1.8           | SUBEXTRAIDA
+             10 | Honey Cerrado          | LT-2026-005 | 1:2.0           | EQUILIBRADA
+             12 | Chiapas Altura Selecta | LT-2026-001 | 1:2.0           | SOBREEXTRAIDA
+             14 | Chiapas Altura Selecta | LT-2026-001 | 1:2.0           | SOBREEXTRAIDA
+             19 | Chiapas Altura Selecta | LT-2026-001 | 1:2.1           | SOBREEXTRAIDA
+             22 | Chiapas Altura Selecta | LT-2026-001 | 1:2.3           | EQUILIBRADA
+(14 filas)
+
+[VI02] Vista v_existencia_lotes: porcentaje restante y estado de cada lote
+CREATE VIEW
+ codigo_lote |      nombre_cafe       | peso_actual_g | peso_inicial_g | porcentaje_restante |   estado   
+-------------+------------------------+---------------+----------------+---------------------+------------
+ LT-2026-003 | Huila Natural          |          0.00 |        1000.00 |                 0.0 | Agotado
+ LT-2026-008 | Cajamarca Natural      |          0.00 |         500.00 |                 0.0 | Agotado
+ LT-2026-006 | Antigua Bourbon        |        180.00 |         750.00 |                24.0 | Disponible
+ LT-2026-002 | Geisha Boquete         |        420.00 |        1000.00 |                42.0 | Disponible
+ LT-2026-005 | Honey Cerrado          |        610.25 |        1000.00 |                61.0 | Disponible
+ LT-2026-009 | Sidama Natural         |        830.00 |        1000.00 |                83.0 | Disponible
+ LT-2026-001 | Chiapas Altura Selecta |        850.50 |        1000.00 |                85.1 | Disponible
+ LT-2026-007 | Nyeri AA               |        975.00 |        1000.00 |                97.5 | Disponible
+ LT-2026-004 | Yirgacheffe Washed     |        500.00 |         500.00 |               100.0 | Disponible
+ LT-2026-010 | Tolima Honey           |       1000.00 |        1000.00 |               100.0 | Disponible
+(10 filas)
+
+[VI03] Vista v_resumen_grano: lotes, calibraciones y resultados por café
+CREATE VIEW
+      nombre_cafe       | lotes | calibraciones | ey_promedio | mejor_sabor 
+------------------------+-------+---------------+-------------+-------------
+ Chiapas Altura Selecta |     1 |             5 |       32.25 |         8.0
+ Geisha Boquete         |     1 |             2 |       19.50 |         7.0
+ Huila Natural          |     1 |             0 |      (nulo) |      (nulo)
+ Yirgacheffe Washed     |     1 |             1 |       17.80 |         5.0
+ Honey Cerrado          |     1 |             2 |       19.54 |         8.0
+ Antigua Bourbon        |     1 |             1 |       19.40 |         8.0
+ Nyeri AA               |     1 |             1 |       18.34 |         7.0
+ Cajamarca Natural      |     1 |             0 |      (nulo) |      (nulo)
+ Sidama Natural         |     1 |             1 |       20.80 |         9.0
+ Tolima Honey           |     1 |             1 |       16.50 |         4.0
+(10 filas)
+
+[VI04] Vista v_mejor_receta_lote: la calibración con mejor sabor de cada lote
+CREATE VIEW
+ codigo_lote | id_calibracion | dosis_in_g | yield_out_g | calificacion_sabor 
+-------------+----------------+------------+-------------+--------------------
+ LT-2026-001 |             22 |      16.00 |       36.00 |                8.0
+ LT-2026-002 |              2 |      19.00 |       38.00 |                7.0
+ LT-2026-004 |              4 |      18.50 |       37.00 |                5.0
+ LT-2026-005 |             10 |      18.00 |       36.00 |                8.0
+ LT-2026-006 |              6 |      18.00 |       36.00 |                8.0
+ LT-2026-007 |              7 |      18.00 |       35.50 |                7.0
+ LT-2026-009 |              8 |      19.00 |       38.00 |                9.0
+ LT-2026-010 |              9 |      18.00 |       33.00 |                4.0
+(8 filas)
+
+[VI05] Vista v_uso_equipos: cuántas veces se ha usado cada equipo
+CREATE VIEW
+ identificador_local |  tipo   |          equipo          | usos 
+---------------------+---------+--------------------------+------
+ MAQ-01              | maquina | La Marzocco Linea Mini   |    4
+ MAQ-02              | maquina | Rocket Appartamento      |    4
+ MOL-02              | molino  | Mazzer Super Jolly       |    3
+ MOL-06              | molino  | Fiorenzato F64 EVO       |    3
+ MAQ-03              | maquina | Lelit Bianca             |    2
+ MAQ-04              | maquina | Breville Barista Express |    2
+ MOL-01              | molino  | Eureka Mignon Specialita |    2
+ MOL-03              | molino  | Niche Zero               |    2
+ MOL-04              | molino  | Baratza Encore ESP       |    2
+ MOL-05              | molino  | Eureka Mignon Silenzio   |    2
+ MAQ-05              | maquina | La Marzocco GS3          |    1
+ MAQ-06              | maquina | Magister Stilo ES100     |    1
+(12 filas)
+
+[FN01] Función fn_calcular_ey(tds, bebida, dosis): porcentaje de extracción
+CREATE FUNCTION
+ id_calibracion | ey_guardado | ey_funcion 
+----------------+-------------+------------
+              1 |       19.80 |      19.80
+              2 |       19.20 |      19.20
+              3 |       19.79 |      19.79
+              4 |       17.80 |      17.80
+              5 |       19.08 |      19.08
+              6 |       19.40 |      19.40
+              7 |       18.34 |      18.34
+              8 |       20.80 |      20.80
+              9 |       16.50 |      16.50
+             10 |       20.00 |      20.00
+             12 |       46.00 |      46.00
+             14 |       37.05 |      37.05
+             19 |       37.69 |      37.69
+             22 |       20.70 |      20.70
+(14 filas)
+
+[FN02] Función fn_porcentaje_existencia(id_lote): cuánto queda de un lote
+CREATE FUNCTION
+ codigo_lote | porcentaje 
+-------------+------------
+ LT-2026-001 |       85.1
+ LT-2026-002 |       42.0
+ LT-2026-003 |        0.0
+ LT-2026-004 |      100.0
+ LT-2026-005 |       61.0
+ LT-2026-006 |       24.0
+ LT-2026-007 |       97.5
+ LT-2026-008 |        0.0
+ LT-2026-009 |       83.0
+ LT-2026-010 |      100.0
+(10 filas)
+
+[FN03] Función fn_historial_lote(codigo): calibraciones de un lote como tabla
+CREATE FUNCTION
+ id_calibracion |       fecha_hora        | ey_porcentaje |  diagnostico  | calificacion_sabor 
+----------------+-------------------------+---------------+---------------+--------------------
+              1 | 2026-10-02 14:15:00     |         19.80 | EQUILIBRADA   |                8.0
+             12 | 2026-10-21 01:56:21.019 |         46.00 | SOBREEXTRAIDA |                7.0
+             14 | 2026-10-21 02:45:43.058 |         37.05 | SOBREEXTRAIDA |                8.0
+             19 | 2026-10-22 15:53:02.606 |         37.69 | SOBREEXTRAIDA |                8.0
+             22 | 2026-11-19 13:54:27.182 |         20.70 | EQUILIBRADA   |                8.0
+(5 filas)
+
+[FN04] Disparador trg_bitacora_existencia: registra cada cambio de peso de un lote
+CREATE TABLE
+CREATE FUNCTION
+psql:docs/unidad5/consola_unidad5.sql:360: NOTICE:  “trigger” «trg_bitacora_existencia» para la relación «lotes» no existe, omitiendo
+DROP TRIGGER
+CREATE TRIGGER
+UPDATE 1
+ id_lote | peso_anterior | peso_nuevo | diferencia 
+---------+---------------+------------+------------
+       2 |        420.00 |     402.00 |     -18.00
+(1 fila)
+
+[FN05] Disparador trg_desactivar_lote_agotado: un lote sin existencia pasa a inactivo
+CREATE FUNCTION
+psql:docs/unidad5/consola_unidad5.sql:378: NOTICE:  “trigger” «trg_desactivar_lote_agotado» para la relación «lotes» no existe, omitiendo
+DROP TRIGGER
+CREATE TRIGGER
+UPDATE 1
+ codigo_lote | peso_actual_g | activo 
+-------------+---------------+--------
+ LT-2026-006 |          0.00 | f
+(1 fila)
+
