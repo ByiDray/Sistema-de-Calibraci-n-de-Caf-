@@ -1,5 +1,28 @@
 # Calibra · Comercial de lanzamiento · Paquete para edición
 
+## Videos terminados (se generan solos)
+`07_videos_finales/` ya trae los tres cortes listos para publicar, armados automáticamente con los recursos de este paquete:
+
+| Archivo | Duración | Formato |
+| --- | --- | --- |
+| `Calibra_60s_16x9.mp4` | 60 s | 1920 × 1080, H.264 + AAC |
+| `Calibra_30s_16x9.mp4` | 30 s | 1920 × 1080, H.264 + AAC |
+| `Calibra_15s_9x16.mp4` | 15 s | 1080 × 1920, H.264 + AAC, subtítulos incluidos |
+
+Incluyen animación de las escenas de cafetería (en lugar de tomas filmadas), la app en uso, locución con voz sintética,
+música y efectos generados por el propio script (sin licencias de terceros).
+
+Para regenerarlos después de cambiar el guión (`herramientas/guion.mjs`) o la marca (`herramientas/config.mjs`):
+```
+cd comercial/herramientas
+npm install
+npm run locucion      # si cambió algún texto de la locución
+npm run render        # los tres videos, en menos de un minuto
+```
+`npm run todo` rehace también capturas y clips de la app (necesita la API local y la app web corriendo).
+
+Lo que sigue en este archivo es para quien quiera rehacerlo a mano en Premiere con tomas reales y un locutor.
+
 El guión completo (concepto, guión técnico escena por escena, locución, cortes y notas de armado) está en
 `Guion_comercial_Calibra.pdf`, en esta misma carpeta. Este archivo explica qué hay en cada carpeta.
 

@@ -1,25 +1,25 @@
 1
-00:00:00,200 --> 00:00:01,850
+00:00:00,200 --> 00:00:02,850
 Cada mañana, la misma prueba.
 
 2
-00:00:02,200 --> 00:00:04,850
+00:00:03,200 --> 00:00:05,850
 ¿Y si cada shot te dijera qué corregir?
 
 3
-00:00:05,200 --> 00:00:06,850
+00:00:06,200 --> 00:00:07,850
 Calibra.
 
 4
-00:00:07,200 --> 00:00:17,850
+00:00:08,200 --> 00:00:18,350
 Registra tu shot y ve el ratio y la extracción mientras escribes. Si se queda corto, te dice qué mover.
 
 5
-00:00:18,200 --> 00:00:22,850
+00:00:18,700 --> 00:00:23,350
 Mira cómo mejora cada lote hasta la zona ideal.
 
 6
-00:00:23,200 --> 00:00:25,850
+00:00:23,700 --> 00:00:25,850
 Menos café desperdiciado.
 
 7

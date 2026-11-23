@@ -64,17 +64,17 @@ export const ESCENAS = [
 // Cortes cortos: qué escenas usan y con qué duración, más la locución adaptada.
 export const CORTES = {
   '30s': [
-    { de: 'E01', dur: 2, vo: 'Cada mañana, la misma prueba.' },
+    { de: 'E01', dur: 3, vo: 'Cada mañana, la misma prueba.' },
     { de: 'E03', dur: 3, vo: '¿Y si cada shot te dijera qué corregir?' },
     { de: 'E04', dur: 2, vo: `${MARCA.nombre}.` },
-    { de: 'E06', dur: 11, vo: 'Registra tu shot y ve el ratio y la extracción mientras escribes. Si se queda corto, te dice qué mover.' },
+    { de: 'E06', dur: 10.5, vo: 'Registra tu shot y ve el ratio y la extracción mientras escribes. Si se queda corto, te dice qué mover.' },
     { de: 'E07', dur: 5, vo: 'Mira cómo mejora cada lote hasta la zona ideal.' },
-    { de: 'E09', dur: 3, vo: 'Menos café desperdiciado.' },
+    { de: 'E09', dur: 2.5, vo: 'Menos café desperdiciado.' },
     { de: 'E10', dur: 4, vo: `${MARCA.nombre}. ${MARCA.eslogan}` },
   ],
   '15s_vertical': [
-    { de: 'E03', dur: 2.5, vo: '¿Y si cada shot te dijera qué corregir?' },
-    { de: 'E06', dur: 8.5, vo: `${MARCA.nombre} calcula tu extracción mientras escribes y te dice qué mover.` },
+    { de: 'E03', dur: 3, vo: '¿Y si cada shot te dijera qué corregir?' },
+    { de: 'E06', dur: 8, vo: `${MARCA.nombre} calcula tu extracción mientras escribes y te dice qué mover.` },
     { de: 'E10', dur: 4, vo: `${MARCA.nombre}. ${MARCA.eslogan}` },
   ],
 };
