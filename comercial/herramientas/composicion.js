@@ -53,6 +53,22 @@ async function cargarRecursos() {
   R.end9 = await cargarImagen('/05_graficos/9x16/E10_end_card.png');
   R.clips = {};
   for (const n of ['01_inicio_resumen', '02_de_cafes_a_lote', '03_grafica_del_lote', '04_calibracion_en_vivo']) R.clips[n] = await cargarVideo(`/04_video_app/${n}.mp4`);
+  // Tomas reales licenciadas en Adobe Stock (comercial/08_stock, fuera de git). Si faltan, las escenas usan la animación.
+  R.stock = {};
+  for (const [k, n] of Object.entries(window.STOCK ?? {})) R.stock[k] = await cargarVideo(`/08_stock/${n}`).catch(() => null);
+}
+
+// Dibuja un video llenando todo el cuadro (recorta lo que sobra), con un leve acercamiento opcional.
+async function cubrir(ctx, video, t, W, H, zoom = 1) {
+  await cuadroDe(video, t);
+  const s = Math.max(W / video.videoWidth, H / video.videoHeight) * zoom;
+  const w = video.videoWidth * s, h = video.videoHeight * s;
+  ctx.drawImage(video, (W - w) / 2, (H - h) / 2, w, h);
+}
+function degradado(ctx, W, H, desde = 0.45, opacidad = 0.75) {
+  const g = ctx.createLinearGradient(0, H * desde, 0, H);
+  g.addColorStop(0, 'rgba(20,12,8,0)'); g.addColorStop(1, `rgba(20,12,8,${opacidad})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
 
 // ---------- piezas de dibujo ----------
@@ -264,8 +280,55 @@ const ESCENA = {
   },
 };
 
+// Versiones con las tomas de Adobe Stock: imagen real a pantalla completa y el mismo texto encima.
+const STOCK = {
+  async E01(ctx, t, dur, W, H, v) {
+    await cubrir(ctx, R.stock.E01, 2 + t, W, H, 1.04 + 0.04 * (t / dur));
+    degradado(ctx, W, H, 0, 0.0); // sin oscurecer: la toma ya es cálida
+    const g = ctx.createLinearGradient(0, 0, 0, H * 0.35); g.addColorStop(0, 'rgba(20,12,8,.55)'); g.addColorStop(1, 'rgba(20,12,8,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * 0.35);
+    const u = v ? W / 1080 : H / 1080;
+    ctx.save(); ctx.globalAlpha = easeOut(prog(t, 0.6, 1.4)); ctx.fillStyle = 'rgba(247,243,238,.95)';
+    ctx.font = `600 ${44 * u}px ${TXT}`; ctx.textAlign = 'center'; ctx.fillText('6:45 a. m. · antes de abrir', W / 2, v ? H * 0.12 : 110 * u);
+    ctx.restore();
+  },
+  async E02(ctx, t, dur, W, H, v) {
+    const mitad = dur / 2;
+    if (t < mitad) await cubrir(ctx, R.stock.E02a, 5.5 + t, W, H, 1.05);
+    else await cubrir(ctx, R.stock.E02b, 0.5 + (t - mitad), W, H, 1.05);
+    degradado(ctx, W, H, 0.35, 0.85);
+    const u = v ? W / 1080 : H / 1080;
+    // Tres intentos tachados, uno tras otro, abajo a la izquierda.
+    const intentos = ['18 s · ácido', '36 s · amargo', '24 s · plano'], paso = (dur - 1.6) / 3;
+    intentos.forEach((txt, i) => {
+      const t0 = 0.2 + i * paso, a = easeOut(prog(t, t0, t0 + 0.35));
+      if (a <= 0) return;
+      const x = 90 * u + i * 330 * u, y = H - 250 * u;
+      ctx.save(); ctx.globalAlpha = a;
+      rrect(ctx, x, y, 300 * u, 92 * u, 18 * u); ctx.fillStyle = 'rgba(43,29,20,.78)'; ctx.fill();
+      ctx.fillStyle = C.crema; ctx.font = `700 ${36 * u}px ${TIT}`; ctx.textAlign = 'center'; ctx.fillText(txt, x + 150 * u, y + 58 * u);
+      const s = easeBack(prog(t, t0 + 0.45, t0 + 0.75));
+      if (s > 0) { ctx.strokeStyle = C.rojo; ctx.lineWidth = 9 * u; ctx.lineCap = 'round'; ctx.beginPath();
+        ctx.moveTo(x + 20 * u, y + 46 * u); ctx.lineTo(x + 20 * u + 260 * u * clamp(s), y + 46 * u); ctx.stroke(); }
+      ctx.restore();
+    });
+    const f = easeOut(prog(t, dur - 1.5, dur - 0.9));
+    if (f > 0) { ctx.save(); ctx.globalAlpha = f; ctx.fillStyle = '#ff8a75'; ctx.font = `700 ${64 * u}px ${TIT}`; ctx.textAlign = 'left';
+      ctx.fillText('54 g de café a la basura', 90 * u, H - 300 * u); ctx.restore(); }
+  },
+  async E09(ctx, t, dur, W, H, v) {
+    await cubrir(ctx, R.stock.E09, 3.5 + t, W, H, 1.02 + 0.03 * (t / dur));
+    degradado(ctx, W, H, 0.4, 0.8);
+    const u = v ? W / 1080 : H / 1080;
+    titular(ctx, 'Menos café desperdiciado.', 90 * u, H - 190 * u, W * 0.8, 84 * u, t, { color: C.crema, retraso: 0.2 });
+    titular(ctx, 'Más tazas en su punto.', 90 * u, H - 90 * u, W * 0.8, 84 * u, t, { color: '#F2C9A0', retraso: 1.4 });
+  },
+};
+
 async function dibujarEscena(id, ctx, t, dur, W, H, v) {
   if (CLIP[id]) return ESCENA.APP(id, ctx, t, dur, W, H, v);
+  const tomas = { E01: ['E01'], E02: ['E02a', 'E02b'], E09: ['E09'] }[id];
+  if (tomas && !v && tomas.every((k) => R.stock?.[k])) return STOCK[id](ctx, t, dur, W, H, v);
   return ESCENA[id](ctx, t, dur, W, H, v);
 }
 

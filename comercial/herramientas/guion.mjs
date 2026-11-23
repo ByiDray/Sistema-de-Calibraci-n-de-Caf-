@@ -10,7 +10,7 @@ export const ESCENAS = [
     recurso: 'Stock: "espresso extraction macro slow motion"' },
   { id: 'E02', ini: 4.5, fin: 10, tipo: 'Filmar / stock',
     imagen: 'Barista anota en una libreta, prueba el shot, hace un gesto y lo tira a la tarja. Corte rápido entre tres intentos.',
-    vo: 'Moler, pesar, probar… y otra vez. Café que acaba en la basura.',
+    vo: 'Moler, pesar, probar… y otra vez. Café a la basura.',
     sonido: 'Golpe del portafiltro en el knock box en cada corte.',
     recurso: 'Stock: "barista tasting espresso", "barista knocking portafilter", "coffee notebook"' },
   { id: 'E03', ini: 10, fin: 13.5, tipo: 'Gráfico',
