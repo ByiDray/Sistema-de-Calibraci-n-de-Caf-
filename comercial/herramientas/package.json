@@ -1,0 +1,16 @@
+{
+  "name": "comercial-herramientas",
+  "private": true,
+  "type": "module",
+  "description": "Genera los recursos del comercial de lanzamiento (marca, capturas, mockups, video de la app, gráficos y locución guía).",
+  "scripts": {
+    "marca": "node marca.mjs",
+    "capturas": "node capturas.mjs",
+    "video": "node video.mjs",
+    "graficos": "node graficos.mjs"
+  },
+  "dependencies": {
+    "mp4-muxer": "^5.2.2",
+    "puppeteer-core": "^24.43.1"
+  }
+}

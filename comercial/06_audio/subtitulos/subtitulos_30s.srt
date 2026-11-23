@@ -1,0 +1,27 @@
+1
+00:00:00,200 --> 00:00:01,850
+Cada mañana, la misma prueba.
+
+2
+00:00:02,200 --> 00:00:04,850
+¿Y si cada shot te dijera qué corregir?
+
+3
+00:00:05,200 --> 00:00:06,850
+Calibra.
+
+4
+00:00:07,200 --> 00:00:17,850
+Registra tu shot y ve el ratio y la extracción mientras escribes. Si se queda corto, te dice qué mover.
+
+5
+00:00:18,200 --> 00:00:22,850
+Mira cómo mejora cada lote hasta la zona ideal.
+
+6
+00:00:23,200 --> 00:00:25,850
+Menos café desperdiciado.
+
+7
+00:00:26,200 --> 00:00:29,850
+Calibra. Cada shot, en su punto.

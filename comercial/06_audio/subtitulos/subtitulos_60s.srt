@@ -1,0 +1,39 @@
+1
+00:00:00,200 --> 00:00:04,350
+Cada mañana, antes de abrir, empieza la misma prueba.
+
+2
+00:00:04,700 --> 00:00:09,850
+Moler, pesar, probar… y otra vez. Café que acaba en la basura.
+
+3
+00:00:10,200 --> 00:00:13,350
+¿Y si cada shot te dijera qué corregir?
+
+4
+00:00:13,700 --> 00:00:15,850
+Te presentamos Calibra.
+
+5
+00:00:16,200 --> 00:00:21,350
+Guarda cada café, cada lote y cuánto te queda de cada bolsa.
+
+6
+00:00:21,700 --> 00:00:35,350
+Registra tu shot y Calibra calcula el ratio y la extracción mientras escribes. Si se queda corto, te dice qué mover: más fino, más temperatura, más tiempo.
+
+7
+00:00:35,700 --> 00:00:41,850
+Mira cómo evoluciona cada lote, shot por shot, hasta caer en la zona ideal.
+
+8
+00:00:42,200 --> 00:00:49,350
+Y al empezar el día, todo en una pantalla: qué se está acabando y quién saca los mejores shots.
+
+9
+00:00:49,700 --> 00:00:54,850
+Menos café desperdiciado. Más tazas en su punto.
+
+10
+00:00:55,200 --> 00:00:59,850
+Calibra. Cada shot, en su punto.
