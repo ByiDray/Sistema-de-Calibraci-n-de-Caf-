@@ -9,3 +9,6 @@ dist/
 respaldos/
 *.sqlite
 apps/api/generated/
+
+# Paquete comprimido del comercial (se regenera desde comercial/)
+comercial/*.zip

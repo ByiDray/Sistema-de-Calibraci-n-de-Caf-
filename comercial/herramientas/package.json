@@ -1,0 +1,20 @@
+{
+  "name": "comercial-herramientas",
+  "private": true,
+  "type": "module",
+  "description": "Genera el comercial completo: marca, capturas, clips de la app, gráficos, locución guía y los videos finales (60 s, 30 s y 15 s vertical).",
+  "scripts": {
+    "marca": "node marca.mjs",
+    "capturas": "node capturas.mjs",
+    "clips": "node video.mjs",
+    "graficos": "node graficos.mjs",
+    "locucion": "node locucion.mjs",
+    "render": "node render.mjs",
+    "recursos": "npm run marca && npm run capturas && npm run clips && npm run graficos && npm run locucion",
+    "todo": "npm run recursos && npm run render"
+  },
+  "dependencies": {
+    "mp4-muxer": "^5.2.2",
+    "puppeteer-core": "^24.43.1"
+  }
+}
