@@ -102,6 +102,39 @@ app.put("/calibraciones/:id", h(async (req, res) => {
 app.delete("/calibraciones/:id", h(async (req, res) =>
   res.json(await prisma.calibracion.delete({ where: { id: id(req) } }))));
 
+// ---- RESUMEN para la pantalla de Inicio de la app ----
+app.get("/resumen", h(async (_req, res) => {
+  const [activos, existencia, porDiagnostico, ultimas, baristas, lotesActivos] = await Promise.all([
+    prisma.lote.count({ where: { activo: true } }),
+    prisma.lote.aggregate({ where: { activo: true }, _sum: { pesoActualG: true } }),
+    prisma.calibracion.groupBy({ by: ["diagnostico"], _count: { _all: true } }),
+    prisma.calibracion.findMany({
+      orderBy: { fechaHora: "desc" }, take: 5,
+      include: { lote: { select: { codigoLote: true, grano: { select: { nombreCafe: true } } } } },
+    }),
+    prisma.calibracion.groupBy({ by: ["baristaNombre"], _count: { _all: true }, _avg: { calificacionSabor: true, eyPorcentaje: true } }),
+    prisma.lote.findMany({ where: { activo: true }, include: { grano: { select: { nombreCafe: true } } } }),
+  ]);
+  // "Queda poco": menos del 20 % del peso inicial, igual que en la app.
+  const pocaExistencia = lotesActivos
+    .filter((l) => Number(l.pesoActualG) < Number(l.pesoInicialG) * 0.2)
+    .sort((a, b) => Number(a.pesoActualG) / Number(a.pesoInicialG) - Number(b.pesoActualG) / Number(b.pesoInicialG))
+    .map((l) => ({ id: l.id, codigoLote: l.codigoLote, nombreCafe: l.grano.nombreCafe, pesoActualG: l.pesoActualG, pesoInicialG: l.pesoInicialG }));
+  res.json({
+    lotesActivos: activos,
+    gramosDisponibles: existencia._sum.pesoActualG ?? 0,
+    calibraciones: Object.fromEntries(porDiagnostico.map((d) => [d.diagnostico, d._count._all])),
+    pocaExistencia,
+    ultimasCalibraciones: ultimas.map((c) => ({
+      id: c.id, idLote: c.idLote, fechaHora: c.fechaHora, eyPorcentaje: c.eyPorcentaje, diagnostico: c.diagnostico,
+      calificacionSabor: c.calificacionSabor, baristaNombre: c.baristaNombre, codigoLote: c.lote.codigoLote, nombreCafe: c.lote.grano.nombreCafe,
+    })),
+    baristas: baristas
+      .map((b) => ({ nombre: b.baristaNombre, calibraciones: b._count._all, saborPromedio: Number(b._avg.calificacionSabor), eyPromedio: Number(b._avg.eyPorcentaje) }))
+      .sort((a, b) => b.saborPromedio - a.saborPromedio),
+  });
+}));
+
 // ---- NOTAS DE CATA (por lote) ----
 app.get("/lotes/:id/notas", h(async (req, res) =>
   res.json(await prisma.notaCata.findMany({ where: { idLote: id(req) }, orderBy: { id: "asc" } }))));

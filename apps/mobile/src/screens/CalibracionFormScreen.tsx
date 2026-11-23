@@ -6,7 +6,7 @@ import { api, type Calibracion, type Equipo } from '../api';
 import type { CafeProps } from '../navegacion';
 import { color, DIAGNOSTICO, espacio, radio, sombra, texto } from '../tema';
 import { Boton, Campo, CampoNumerico, Cargando, ErrorCarga, Fila, Seccion, Selector, Tarjeta, useAviso } from '../ui';
-import { aNumero, calcularDerivados, CONSEJO, mensajeError, num } from '../utilidades';
+import { aNumero, calcularDerivados, confirmar, CONSEJO, mensajeError, num } from '../utilidades';
 
 type Clave = 'dosisInG' | 'ajusteMolienda' | 'temperaturaC' | 'presionBar' | 'yieldOutG' | 'tiempoSegundos' | 'tdsPorcentaje' | 'calificacionSabor';
 type Def = { etiqueta: string; unidad?: string; paso?: number; min: number; max: number; minExclusivo?: boolean; placeholder: string };
@@ -26,7 +26,8 @@ const RECETA: Clave[] = ['dosisInG', 'ajusteMolienda', 'temperaturaC', 'presionB
 const RESULTADO: Clave[] = ['yieldOutG', 'tiempoSegundos', 'tdsPorcentaje'];
 
 export default function CalibracionFormScreen({ route, navigation }: CafeProps<'CalibracionForm'>) {
-  const { idLote, codigo } = route.params;
+  const { idLote, codigo, idCalibracion } = route.params;
+  const editando = idCalibracion !== undefined;
   const aviso = useAviso();
   const inset = useSafeAreaInsets();
   const [equipos, setEquipos] = useState<Equipo[] | null>(null);
@@ -47,10 +48,22 @@ export default function CalibracionFormScreen({ route, navigation }: CafeProps<'
     Promise.all([api<Equipo[]>('/equipos'), api<Calibracion[]>(`/calibraciones?idLote=${idLote}`)])
       .then(([eqs, cals]) => {
         setEquipos(eqs);
-        const ult = cals[0] ?? null;
-        setAnterior(ult);
         const molinos = eqs.filter((e) => e.tipo === 'molino');
         const maquinas = eqs.filter((e) => e.tipo === 'maquina');
+        if (editando) {
+          // Corrección de una calibración ya guardada: se cargan todos sus valores.
+          const c = cals.find((x) => x.id === idCalibracion);
+          if (!c) throw new Error('Esta calibración ya no existe.');
+          setIdMolino(c.idMolino); setIdMaquina(c.idMaquina);
+          setV({
+            dosisInG: num(c.dosisInG), ajusteMolienda: num(c.ajusteMolienda), temperaturaC: num(c.temperaturaC), presionBar: num(c.presionBar),
+            yieldOutG: num(c.yieldOutG), tiempoSegundos: num(c.tiempoSegundos), tdsPorcentaje: num(c.tdsPorcentaje), calificacionSabor: num(c.calificacionSabor),
+          });
+          setBarista(c.baristaNombre); setNotas(c.notasBarista ?? '');
+          return;
+        }
+        const ult = cals[0] ?? null;
+        setAnterior(ult);
         // Se parte de la última receta del lote: así solo se ajusta lo que cambió.
         setIdMolino(ult && molinos.some((m) => m.id === ult.idMolino) ? ult.idMolino : molinos.length === 1 ? molinos[0].id : null);
         setIdMaquina(ult && maquinas.some((m) => m.id === ult.idMaquina) ? ult.idMaquina : maquinas.length === 1 ? maquinas[0].id : null);
@@ -86,16 +99,28 @@ export default function CalibracionFormScreen({ route, navigation }: CafeProps<'
 
     setGuardando(true);
     try {
-      const nueva = await api<Calibracion>('/calibraciones', {
-        method: 'POST',
-        body: { ...body, idLote, idMolino, idMaquina, baristaNombre: barista.trim(), notasBarista: notas.trim() || null, fechaHora: new Date().toISOString() },
-      });
+      const datos = { ...body, idLote, idMolino, idMaquina, baristaNombre: barista.trim(), notasBarista: notas.trim() || null };
+      // Al corregir se conserva la fecha original; la API recalcula ratio, EY y diagnóstico.
+      const nueva = editando
+        ? await api<Calibracion>(`/calibraciones/${idCalibracion}`, { method: 'PUT', body: datos })
+        : await api<Calibracion>('/calibraciones', { method: 'POST', body: { ...datos, fechaHora: new Date().toISOString() } });
       const d = DIAGNOSTICO[nueva.diagnostico as keyof typeof DIAGNOSTICO];
-      aviso(`Guardada · ${d?.etiqueta ?? nueva.diagnostico} · EY ${num(nueva.eyPorcentaje)} %`);
+      aviso(`${editando ? 'Corregida' : 'Guardada'} · ${d?.etiqueta ?? nueva.diagnostico} · EY ${num(nueva.eyPorcentaje)} %`);
       navigation.goBack();
     } catch (err) {
       aviso(mensajeError(err), 'error');
     } finally { setGuardando(false); }
+  };
+
+  const eliminar = async () => {
+    if (!(await confirmar('Eliminar calibración', 'Se borrará este registro del historial del lote. Esta acción no se puede deshacer.'))) return;
+    try {
+      await api(`/calibraciones/${idCalibracion}`, { method: 'DELETE' });
+      aviso('Calibración eliminada');
+      navigation.goBack();
+    } catch (err) {
+      aviso(mensajeError(err), 'error');
+    }
   };
 
   if (errorCarga) return <ErrorCarga mensaje={errorCarga} onReintentar={cargar} />;
@@ -119,9 +144,11 @@ export default function CalibracionFormScreen({ route, navigation }: CafeProps<'
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
       <ScrollView contentContainerStyle={s.contenedor} keyboardShouldPersistTaps="handled">
         <Fila style={{ gap: 6 }}>
-          <Ionicons name={anterior ? 'refresh-circle-outline' : 'sparkles-outline'} size={18} color={color.textoSuave} />
+          <Ionicons name={editando ? 'create-outline' : anterior ? 'refresh-circle-outline' : 'sparkles-outline'} size={18} color={color.textoSuave} />
           <Text style={[texto.pequeno, { flex: 1 }]}>
-            {anterior
+            {editando
+              ? 'Corrige los datos de esta calibración. La fecha original se conserva y el EY se vuelve a calcular.'
+              : anterior
               ? `Partimos de tu última receta${codigo ? ` del lote ${codigo}` : ''}. Ajusta solo lo que cambiaste.`
               : 'Primera calibración de este lote. Llena la receta y el resultado del shot.'}
           </Text>
@@ -165,11 +192,18 @@ export default function CalibracionFormScreen({ route, navigation }: CafeProps<'
               placeholder="Ej. dulce, cuerpo medio, final un poco astringente" />
           </Tarjeta>
         </Seccion>
+
+        {editando && (
+          <View style={s.peligro}>
+            <Text style={texto.pequeno}>Si este registro fue un error de captura, puedes quitarlo del historial.</Text>
+            <Boton titulo="Eliminar calibración" icono="trash-outline" variante="peligro" onPress={eliminar} />
+          </View>
+        )}
       </ScrollView>
 
       <View style={[s.barraInferior, sombra, { paddingBottom: espacio.m + inset.bottom }]}>
         <ResumenCompacto vivo={vivo} />
-        <Boton titulo="Guardar" icono="checkmark" onPress={guardar} cargando={guardando} style={{ minWidth: 130 }} />
+        <Boton titulo={editando ? 'Guardar cambios' : 'Guardar'} icono="checkmark" onPress={guardar} cargando={guardando} style={{ minWidth: 130 }} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -234,6 +268,7 @@ function ResumenCompacto({ vivo }: { vivo: Vivo }) {
 const s = StyleSheet.create({
   contenedor: { padding: espacio.l, gap: espacio.xl, paddingBottom: 120 },
   rejilla: { flexDirection: 'row', flexWrap: 'wrap', gap: espacio.m },
+  peligro: { gap: espacio.s, paddingTop: espacio.l, borderTopWidth: 1, borderColor: color.borde },
   panel: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, padding: espacio.m, borderRadius: radio.m },
   panelEtiqueta: { fontSize: 11, fontWeight: '700', color: color.textoSuave, letterSpacing: 0.6 },
   panelValor: { fontSize: 24, fontWeight: '800', color: color.texto, fontVariant: ['tabular-nums'] },

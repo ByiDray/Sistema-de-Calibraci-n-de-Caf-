@@ -1,16 +1,18 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { api, type GranoConLotes, type Lote } from '../api';
 import type { CafeProps } from '../navegacion';
 import { color, espacio, texto } from '../tema';
-import { BarraProgreso, Boton, BotonFlotante, BotonIcono, Cargando, Dato, ErrorCarga, EstadoVacio, Fila, Insignia, Seccion, Tarjeta } from '../ui';
+import { BarraProgreso, Boton, BotonFlotante, BotonIcono, Cargando, Dato, ErrorCarga, EstadoVacio, Fila, Insignia, Seccion, Selector, Tarjeta } from '../ui';
 import { useCarga } from '../useCarga';
 import { haceDias, num } from '../utilidades';
 
 export default function LotesScreen({ route, navigation }: CafeProps<'Lotes'>) {
   const { idGrano } = route.params;
   const { datos: grano, error, recargar } = useCarga(() => api<GranoConLotes>(`/granos/${idGrano}`), [idGrano]);
+  const [estado, setEstado] = useState('Todos');
+  const [nivel, setNivel] = useState('Todos');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,8 +25,10 @@ export default function LotesScreen({ route, navigation }: CafeProps<'Lotes'>) {
   if (!grano) return <Cargando />;
 
   const nuevo = () => navigation.navigate('LoteForm', { idGrano });
-  const activos = grano.lotes.filter((l) => l.activo).sort((a, b) => b.fechaTueste.localeCompare(a.fechaTueste));
-  const inactivos = grano.lotes.filter((l) => !l.activo).sort((a, b) => b.fechaTueste.localeCompare(a.fechaTueste));
+  const visibles = grano.lotes.filter((l) => (nivel === 'Todos' || l.nivelTueste === nivel) && (estado !== 'Activos' || l.activo) && (estado !== 'Inactivos' || !l.activo));
+  const activos = visibles.filter((l) => l.activo).sort((a, b) => b.fechaTueste.localeCompare(a.fechaTueste));
+  const inactivos = visibles.filter((l) => !l.activo).sort((a, b) => b.fechaTueste.localeCompare(a.fechaTueste));
+  const hayFiltro = nivel !== 'Todos' || estado !== 'Todos';
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,10 +56,27 @@ export default function LotesScreen({ route, navigation }: CafeProps<'Lotes'>) {
           />
         ) : (
           <>
+            {grano.lotes.length > 1 && (
+              <View style={{ gap: espacio.s }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Selector opciones={['Todos', 'Activos', 'Inactivos'].map((v) => ({ valor: v, etiqueta: v }))} valor={estado} onCambio={setEstado} />
+                </ScrollView>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Selector opciones={['Todos', 'Claro', 'Medio', 'Oscuro'].map((v) => ({ valor: v, etiqueta: v === 'Todos' ? 'Cualquier tueste' : `Tueste ${v.toLowerCase()}` }))}
+                    valor={nivel} onCambio={setNivel} />
+                </ScrollView>
+              </View>
+            )}
+            {visibles.length === 0 && (
+              <EstadoVacio icono="filter-outline" titulo="Ningún lote coincide" mensaje="Prueba con otro filtro."
+                accion={<Boton titulo="Quitar filtros" variante="secundario" onPress={() => { setNivel('Todos'); setEstado('Todos'); }} />} />
+            )}
+            {activos.length > 0 || (!hayFiltro && visibles.length > 0) ? (
             <Seccion titulo={`Lotes activos (${activos.length})`}>
               {activos.length === 0 && <Text style={texto.pequeno}>No hay lotes activos.</Text>}
               {activos.map((l) => <TarjetaLote key={l.id} lote={l} onPress={() => navigation.navigate('LoteDetalle', { idLote: l.id, codigo: l.codigoLote })} />)}
             </Seccion>
+            ) : null}
             {inactivos.length > 0 && (
               <Seccion titulo={`Terminados o inactivos (${inactivos.length})`}>
                 {inactivos.map((l) => <TarjetaLote key={l.id} lote={l} onPress={() => navigation.navigate('LoteDetalle', { idLote: l.id, codigo: l.codigoLote })} />)}
