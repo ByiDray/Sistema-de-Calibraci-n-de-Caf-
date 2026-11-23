@@ -12,9 +12,10 @@ import LoteFormScreen from './src/screens/LoteFormScreen';
 import CalibracionFormScreen from './src/screens/CalibracionFormScreen';
 import EquiposScreen from './src/screens/EquiposScreen';
 import EquipoFormScreen from './src/screens/EquipoFormScreen';
+import InicioScreen from './src/screens/InicioScreen';
 import { ProveedorAvisos } from './src/ui';
 import { color } from './src/tema';
-import type { CafeStackParamList, EquiposStackParamList, TabsParamList } from './src/navegacion';
+import type { CafeStackParamList, EquiposStackParamList, InicioStackParamList, TabsParamList } from './src/navegacion';
 
 const tema: Theme = {
   ...DefaultTheme,
@@ -30,6 +31,21 @@ const cabecera: NativeStackNavigationOptions = {
   contentStyle: { backgroundColor: color.fondo },
 };
 
+const InicioNav = createNativeStackNavigator<InicioStackParamList>();
+function InicioStack() {
+  return (
+    <InicioNav.Navigator screenOptions={cabecera}>
+      <InicioNav.Screen name="Inicio" component={InicioScreen} options={{ title: 'Resumen', headerLargeTitle: true }} />
+    </InicioNav.Navigator>
+  );
+}
+
+const ICONOS = {
+  InicioTab: ['home', 'home-outline'],
+  CafeTab: ['cafe', 'cafe-outline'],
+  EquiposTab: ['construct', 'construct-outline'],
+} as const;
+
 const Cafe = createNativeStackNavigator<CafeStackParamList>();
 function CafeStack() {
   return (
@@ -41,7 +57,8 @@ function CafeStack() {
       <Cafe.Screen name="LoteForm" component={LoteFormScreen}
         options={({ route }) => ({ title: route.params.idLote ? 'Editar lote' : 'Nuevo lote', presentation: 'modal' })} />
       <Cafe.Screen name="LoteDetalle" component={LoteDetalleScreen} options={({ route }) => ({ title: route.params.codigo })} />
-      <Cafe.Screen name="CalibracionForm" component={CalibracionFormScreen} options={{ title: 'Nueva calibración' }} />
+      <Cafe.Screen name="CalibracionForm" component={CalibracionFormScreen}
+        options={({ route }) => ({ title: route.params.idCalibracion ? 'Editar calibración' : 'Nueva calibración' })} />
     </Cafe.Navigator>
   );
 }
@@ -85,15 +102,13 @@ function Pestanas() {
                 backgroundColor: color.superficie, borderTopColor: color.borde,
                 height: 66 + inset.bottom, paddingTop: 4, paddingBottom: 4 + inset.bottom,
               },
-              tabBarLabelStyle: { fontSize: 12, lineHeight: 16, fontWeight: '600' },              tabBarIcon: ({ color: c, focused, size }) => (
-                <Ionicons
-                  size={size}
-                  color={c}
-                  name={route.name === 'CafeTab' ? (focused ? 'cafe' : 'cafe-outline') : (focused ? 'construct' : 'construct-outline')}
-                />
+              tabBarLabelStyle: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
+              tabBarIcon: ({ color: c, focused, size }) => (
+                <Ionicons size={size} color={c} name={ICONOS[route.name][focused ? 0 : 1]} />
               ),
             })}
           >
+            <Tabs.Screen name="InicioTab" component={InicioStack} options={{ title: 'Inicio' }} />
             <Tabs.Screen name="CafeTab" component={CafeStack} options={{ title: 'Cafés' }} />
             <Tabs.Screen name="EquiposTab" component={EquiposStack} options={{ title: 'Equipos' }} />
           </Tabs.Navigator>

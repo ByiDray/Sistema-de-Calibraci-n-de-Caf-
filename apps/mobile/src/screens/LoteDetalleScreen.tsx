@@ -8,6 +8,7 @@ import { Boton, BotonIcono, Cargando, Dato, ErrorCarga, EstadoVacio, Fila, Insig
 import { useCarga } from '../useCarga';
 import { fechaHora, mensajeError, num } from '../utilidades';
 import { TarjetaLote } from './LotesScreen';
+import { GraficaCalibraciones } from '../GraficaCalibraciones';
 
 export default function LoteDetalleScreen({ route, navigation }: CafeProps<'LoteDetalle'>) {
   const { idLote } = route.params;
@@ -98,7 +99,12 @@ export default function LoteDetalleScreen({ route, navigation }: CafeProps<'Lote
                 <Dato etiqueta="MEJOR RECETA" valor={`${num(mejor.dosisInG)}→${num(mejor.yieldOutG)} g`} />
               </Fila>
             )}
-            {cals.map((c, i) => <TarjetaCalibracion key={c.id} c={c} reciente={i === 0} mejor={c.id === mejor?.id && cals.length > 1} />)}
+            <GraficaCalibraciones calibraciones={cals} />
+            {cals.length > 0 && <Text style={texto.pequeno}>Toca una calibración para corregirla o eliminarla.</Text>}
+            {cals.map((c, i) => (
+              <TarjetaCalibracion key={c.id} c={c} reciente={i === 0} mejor={c.id === mejor?.id && cals.length > 1}
+                onPress={() => navigation.navigate('CalibracionForm', { idLote, codigo: lote.codigoLote, idCalibracion: c.id })} />
+            ))}
           </>
         )}
       </Seccion>
@@ -106,10 +112,10 @@ export default function LoteDetalleScreen({ route, navigation }: CafeProps<'Lote
   );
 }
 
-function TarjetaCalibracion({ c, reciente, mejor }: { c: Calibracion; reciente: boolean; mejor: boolean }) {
+function TarjetaCalibracion({ c, reciente, mejor, onPress }: { c: Calibracion; reciente: boolean; mejor: boolean; onPress: () => void }) {
   const d = DIAGNOSTICO[c.diagnostico as Diagnostico];
   return (
-    <Tarjeta style={[{ borderLeftWidth: 4, borderLeftColor: d?.fg ?? color.borde }]}>
+    <Tarjeta onPress={onPress} style={[{ borderLeftWidth: 4, borderLeftColor: d?.fg ?? color.borde }]}>
       <Fila style={{ justifyContent: 'space-between' }}>
         <InsigniaDiagnostico diagnostico={c.diagnostico} />
         <Fila style={{ gap: 6 }}>

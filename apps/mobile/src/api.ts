@@ -19,6 +19,17 @@ export type Calibracion = {
 };
 export type Equipo = { id: number; tipo: 'molino' | 'maquina'; marca: string; modelo: string; identificadorLocal: string };
 export type LoteDetalle = Lote & { notasCata: NotaCata[]; calibraciones: Calibracion[] };
+export type Resumen = {
+  lotesActivos: number;
+  gramosDisponibles: string | number;
+  calibraciones: Partial<Record<'EQUILIBRADA' | 'SUBEXTRAIDA' | 'SOBREEXTRAIDA', number>>;
+  pocaExistencia: { id: number; codigoLote: string; nombreCafe: string; pesoActualG: string; pesoInicialG: string }[];
+  ultimasCalibraciones: {
+    id: number; idLote: number; fechaHora: string; eyPorcentaje: string; diagnostico: string;
+    calificacionSabor: string; baristaNombre: string; codigoLote: string; nombreCafe: string;
+  }[];
+  baristas: { nombre: string; calibraciones: number; saborPromedio: number; eyPromedio: number }[];
+};
 
 export async function api<T>(path: string, options?: { method?: string; body?: unknown }): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
