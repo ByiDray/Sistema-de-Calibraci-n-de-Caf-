@@ -9,8 +9,14 @@
 | `Calibra_30s_16x9.mp4` | 30 s | 1920 × 1080, H.264 + AAC |
 | `Calibra_15s_9x16.mp4` | 15 s | 1080 × 1920, H.264 + AAC, subtítulos incluidos |
 
-Incluyen animación de las escenas de cafetería (en lugar de tomas filmadas), la app en uso, locución con voz sintética,
-música y efectos generados por el propio script (sin licencias de terceros).
+Incluyen tomas reales de Adobe Stock en las escenas de cafetería (E01, E02 y E09), la app en uso, locución con la voz
+neuronal es-MX-DaliaNeural de Microsoft, y música y efectos generados por el propio script (sin licencias de terceros).
+Los videos también están en Creative Cloud, carpeta `Calibra/Finales`.
+
+**Tomas de Adobe Stock** (licenciadas en la cuenta de Adobe del proyecto, catálogo gratuito): 501155700 (espresso cayendo),
+125333823 (barista con el café molido), 574960367 (barista compactando) y 464409799 (barista sirviendo al cliente).
+Los archivos van en `08_stock/`, que no se sube a git porque la licencia no permite redistribuirlos. Sin esa carpeta,
+esas escenas se generan con la animación de respaldo.
 
 Para regenerarlos después de cambiar el guión (`herramientas/guion.mjs`) o la marca (`herramientas/config.mjs`):
 ```

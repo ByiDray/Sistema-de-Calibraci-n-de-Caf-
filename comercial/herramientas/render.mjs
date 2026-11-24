@@ -13,7 +13,7 @@ import { CORTES, ESCENAS } from './guion.mjs';
 const raiz = fileURLToPath(SALIDA);
 const destino = path.join(raiz, '07_videos_finales');
 fs.mkdirSync(destino, { recursive: true });
-const TIPOS = { '.png': 'image/png', '.mp4': 'video/mp4', '.wav': 'audio/wav', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
+const TIPOS = { '.png': 'image/png', '.mp4': 'video/mp4', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.mov': 'video/mp4', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
 
 // Servidor local: entrega los recursos de comercial/ y recibe el MP4 terminado.
 const servidor = http.createServer((req, res) => {
@@ -29,7 +29,7 @@ const servidor = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.end(`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="${FUENTES.css}">
       <body style="font-family:${FUENTES.titulos},${FUENTES.texto}">.</body>
-      <script>window.MARCA=${JSON.stringify(MARCA)};window.MARCA_COLOR=${JSON.stringify(COLOR)};</script>
+      <script>window.STOCK=${JSON.stringify(STOCK)};window.MARCA=${JSON.stringify(MARCA)};window.MARCA_COLOR=${JSON.stringify(COLOR)};</script>
       <script src="/herramientas/node_modules/mp4-muxer/build/mp4-muxer.js"></script>
       <script src="/herramientas/composicion.js"></script>`);
   }
@@ -41,7 +41,10 @@ const servidor = http.createServer((req, res) => {
 await new Promise((ok) => servidor.listen(0, '127.0.0.1', ok));
 const base = `http://localhost:${servidor.address().port}`;
 
-const vo = (id) => `/06_audio/locucion_guia/VO_${id}.wav`;
+// Usa la locución que exista: MP3 (voz neuronal) o WAV (voz de Windows).
+// Tomas de Adobe Stock por escena (archivos en comercial/08_stock; si no están, se usa la animación).
+const STOCK = { E01: 'E01_espresso_501155700.mov', E02a: 'E02a_molido_125333823.mov', E02b: 'E02b_compactar_574960367.mov', E09: 'E09_servir_464409799.mov' };
+const vo = (id) => { const d = path.join(raiz, '06_audio/locucion_guia'); const f = fs.readdirSync(d).find((x) => x.startsWith(`VO_${id}.`)); return `/06_audio/locucion_guia/${f}`; };
 const VERSIONES = {
   '60s': { nombre: 'Calibra_60s_16x9.mp4', ancho: 1920, alto: 1080, subtitulos: false,
     segmentos: ESCENAS.map((e) => ({ escena: e.id, dur: e.fin - e.ini, vo: vo(e.id), texto: e.vo })) },

@@ -1,0 +1,19 @@
+{
+  "bpm": 100,
+  "fps": 30,
+  "cuadrosPorTiempo": 18,
+  "cuadrosPorCompas": 72,
+  "duracionCuadros": 2700,
+  "placas": [
+    { "id": "P01", "nombre": "La prueba de cada mañana", "compas": 0, "compases": 4 },
+    { "id": "P02", "nombre": "La pregunta", "compas": 4, "compases": 2 },
+    { "id": "P03", "nombre": "Revelado del logo", "compas": 6, "compases": 3 },
+    { "id": "P04", "nombre": "Cafés y lotes", "compas": 9, "compases": 4 },
+    { "id": "P05", "nombre": "Ratio y EY mientras escribes", "compas": 13, "compases": 5 },
+    { "id": "P06", "nombre": "Diagnóstico", "compas": 18, "compases": 4 },
+    { "id": "P07", "nombre": "Gráfica del lote", "compas": 22, "compases": 4 },
+    { "id": "P08", "nombre": "Inicio y ranking", "compas": 26, "compases": 5 },
+    { "id": "P09", "nombre": "Beneficio", "compas": 31, "compases": 2 },
+    { "id": "P10", "nombre": "Cierre", "compas": 33, "compases": 4.5 }
+  ]
+}

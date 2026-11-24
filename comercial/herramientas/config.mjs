@@ -27,7 +27,11 @@ export const FUENTES = {
   css: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap',
 };
 
-export const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+// Locución. motor 'edge' = voces neuronales de Microsoft (servicio de lectura en voz alta de Edge; envía el texto a Microsoft).
+// motor 'windows' = voz instalada en Windows (sin conexión, suena más robótica).
+export const VOZ = { motor: 'edge', nombre: 'es-MX-DaliaNeural', velocidad: '+4%', respaldo: 'Microsoft Sabina Desktop' };
+
+export const CHROME ='C:/Program Files/Google/Chrome/Application/chrome.exe';
 export const APP_URL = process.env.APP_URL ?? 'http://localhost:8081';
 export const SALIDA = new URL('../', import.meta.url); // carpeta comercial/
 

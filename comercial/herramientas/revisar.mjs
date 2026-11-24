@@ -11,7 +11,8 @@ const p = await b.newPage();
 await p.goto(`http://localhost:${srv.address().port}/`);
 const r = await p.evaluate(async (ts, escala) => {
   const buf = await (await fetch('/v.mp4')).arrayBuffer();
-  const audio = await new AudioContext().decodeAudioData(buf.slice(0));
+  let audio = { duration: 0, getChannelData: () => new Float32Array(1) };
+  try { audio = await new AudioContext().decodeAudioData(buf.slice(0)); } catch {}
   const ch = audio.getChannelData(0); let s = 0, pk = 0; for (let i = 0; i < ch.length; i++) { s += ch[i] * ch[i]; pk = Math.max(pk, Math.abs(ch[i])); }
   const v = document.createElement('video'); v.muted = true; v.src = URL.createObjectURL(new Blob([buf], { type: 'video/mp4' }));
   await new Promise((o) => (v.onloadeddata = o));

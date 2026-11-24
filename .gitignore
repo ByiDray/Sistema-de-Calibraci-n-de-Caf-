@@ -12,3 +12,5 @@ apps/api/generated/
 
 # Paquete comprimido del comercial (se regenera desde comercial/)
 comercial/*.zip
+# Tomas licenciadas de Adobe Stock (la licencia no permite redistribuirlas)
+comercial/08_stock/
